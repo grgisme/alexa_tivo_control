@@ -103,17 +103,20 @@ app.intent('Netflix',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} netflix" ]
     },
     function(request,response) {
-        sendCommand("GUIDE");
-        sendCommand("TIVO");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("RIGHT");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("ENTER");
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "ENTER"
+        ];
+        sendCommands(commands);
     });
 
 app.intent('Amazon',
@@ -122,16 +125,19 @@ app.intent('Amazon',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} amazon {video|}" ]
     },
     function(request,response) {
-        sendCommand("GUIDE");
-        sendCommand("TIVO");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("RIGHT");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("ENTER");
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "ENTER"
+        ];
+        sendCommands(commands);
     });
 
 app.intent('Hulu',
@@ -140,18 +146,21 @@ app.intent('Hulu',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} hulu" ]
     },
     function(request,response) {
-        sendCommand("GUIDE");
-        sendCommand("TIVO");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("RIGHT");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("ENTER");
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "ENTER"
+        ];
+        sendCommands(commands);
     });
 
 app.intent('YouTube',
@@ -160,19 +169,22 @@ app.intent('YouTube',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} youtube" ]
     },
     function(request,response) {
-        sendCommand("GUIDE");
-        sendCommand("TIVO");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("RIGHT");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("DOWN");
-        sendCommand("ENTER");
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "ENTER"
+        ];
+        sendCommands(commands);
     });
 
 app.intent('ChangeChannel',
@@ -206,6 +218,35 @@ app.express(express_app, "/", true);
 if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.schema ());
     console.log (app.utterances ());
+}
+
+function sendCommands(commands) {
+
+    var host = config.tivoIP;
+    var port = config.tivoPort;
+    var telnetSocket = net.createConnection({
+        port: port,
+        host: host
+    });
+    for(var i=0; i<commands.length; i++) {
+        var command = commands[i];
+        if(typeof command == "object" && typeof command["explicit"] != "undefined") {
+            telnetSocket.write(command["command"].toUpperCase() + "\r");
+            console.log("Sending Command: " + command["command"].toUpperCase());
+        }
+        else {
+            if(typeof command == "object")
+                command = command["command"];
+            var prefix = determinePrefix(command);
+            if(prefix === false)
+                console.log("ERROR: Command Not Support: "+command);
+            else {
+                telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
+                console.log("Sending Command: "+prefix + " " + command.toUpperCase());
+            }
+        }
+    }
+    telnetSocket.end();
 }
 
 function sendCommand(command, explicit) {
