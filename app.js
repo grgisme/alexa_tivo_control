@@ -23,4 +23,4 @@ app.intent('play', function(request,response) {
 var express_app = express();
 express_app.listen(port);
 
-app.express(express_app, "/", false);
+app.express(express_app, "/", true);
