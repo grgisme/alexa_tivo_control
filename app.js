@@ -18,7 +18,7 @@ var connection = new telnet();
 var params = {
     host: config.tivoIP,
     port: config.tivoPort,
-    shellPrompt: '/ # ',
+    shellPrompt: '',
     timeout: 1500
 };
 
@@ -74,7 +74,7 @@ function sendCommand(command) {
         .then(function() {
             connection.send("IRCODE "+command.toUpperCase())
                 .then(function() {
-                    console.log("Connected and sent code: IRCODE "+comamnd.toUpperCase());
+                    console.log("Connected and sent code: IRCODE "+command.toUpperCase());
                 });
         }, function(error) {
             console.log('promises reject:', error)
