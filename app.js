@@ -72,7 +72,7 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
 function sendCommand(command) {
     connection.connect(params)
         .then(function() {
-            connection.send("IRCODE "+command.toUpperCase(), {})
+            connection.exec("IRCODE "+command.toUpperCase(), {})
                 .then(function() {
                     console.log("Connected and sent code: IRCODE "+command.toUpperCase());
                 });
