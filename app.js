@@ -125,7 +125,7 @@ app.intent('Netflix',
             "DOWN",
             "DOWN",
             "DOWN",
-            "ENTER"
+            "RIGHT"
         ];
         sendCommands(commands);
     });
@@ -146,7 +146,7 @@ app.intent('Amazon',
             "DOWN",
             "DOWN",
             "DOWN",
-            "ENTER"
+            "RIGHT"
         ];
         sendCommands(commands);
     });
@@ -169,7 +169,7 @@ app.intent('Hulu',
             "DOWN",
             "DOWN",
             "DOWN",
-            "ENTER"
+            "RIGHT"
         ];
         sendCommands(commands);
     });
@@ -193,7 +193,7 @@ app.intent('YouTube',
             "DOWN",
             "DOWN",
             "DOWN",
-            "ENTER"
+            "RIGHT"
         ];
         sendCommands(commands);
     });
