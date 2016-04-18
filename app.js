@@ -265,6 +265,9 @@ function sendCommands(commands) {
         port: port,
         host: host
     });
+    telnetSocket.on('data', function(data) {
+        console.log("RECEIVED: "+data.toString());
+    });
 
     queuedCommands = [];
     for(var i=0; i<commands.length; i++) {
