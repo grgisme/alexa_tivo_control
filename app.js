@@ -103,25 +103,45 @@ app.intent('GoHome',
         sendCommand("TIVO");
     });
 
+function addInitCommands(commands) {
+    commands.push("GUIDE");
+    commands.push("TIVO");
+    return commands;
+}
+function openMediaCommands(commands) {
+    commands.push("DOWN");
+    commands.push("DOWN");
+    if(tivoMini)
+        commands.push("DOWN");
+    commands.push("RIGHT");
+    return commands;
+}
+function openMusicCommands(commands) {
+    commands.push("DOWN");
+    commands.push("DOWN");
+    commands.push("DOWN");
+    if(tivoMini)
+        commands.push("DOWN");
+    commands.push("RIGHT");
+    return commands;
+}
+
 app.intent('Netflix',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} netflix" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
+
         sendCommands(commands);
     });
 
@@ -131,18 +151,14 @@ app.intent('Amazon',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} amazon {video|}" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -152,20 +168,16 @@ app.intent('Hulu',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hulu" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -175,21 +187,17 @@ app.intent('YouTube',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} youtube" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -199,22 +207,18 @@ app.intent('MBLTV',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {the|} {mlb|baseball|mlb tv|major league baseball|major league baseball tv}" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -224,23 +228,19 @@ app.intent('Plex',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} plex" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -250,17 +250,13 @@ app.intent('HBOGo',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hbo {go|}" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMediaCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -270,18 +266,11 @@ app.intent('Pandora',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} pandora", "play {music|music on pandora|pandora}" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMusicCommands(commands);
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -291,19 +280,12 @@ app.intent('Spotify',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} spotify", "play {music|music on|} spotify" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMusicCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -313,20 +295,13 @@ app.intent('iHeartRadio',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} iheartradio", "play {music|music on|} iheartradio" ]
     },
     function(request,response) {
-        var commands = [
-            "GUIDE",
-            "TIVO",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT",
-            "DOWN",
-            "DOWN",
-            "DOWN",
-            "RIGHT"
-        ];
+        var commands = [];
+        commands = addInitCommands(commands);
+        commands = openMusicCommands(commands);
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
