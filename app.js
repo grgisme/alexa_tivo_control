@@ -187,6 +187,77 @@ app.intent('YouTube',
         sendCommands(commands);
     });
 
+app.intent('MBLTV',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} {the|} {mlb|baseball|mlb tv|major league baseball|major league baseball tv}" ]
+    },
+    function(request,response) {
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "RIGHT"
+        ];
+        sendCommands(commands);
+    });
+
+app.intent('Plex',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} plex" ]
+    },
+    function(request,response) {
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "RIGHT"
+        ];
+        sendCommands(commands);
+    });
+
+app.intent('HBOGo',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} hbo {go|}" ]
+    },
+    function(request,response) {
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "RIGHT"
+        ];
+        sendCommands(commands);
+    });
+
 app.intent('ChangeChannel',
     {
         "slots":{"TIVOCHANNEL":"NUMBER"},
