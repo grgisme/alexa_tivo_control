@@ -5,7 +5,7 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
-var telnet = require('telnet-client');
+var Telnet = require('telnet-client');
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,7 +14,7 @@ express_app.set('view engine','ejs');
 
 
 
-var connection = new telnet();
+var connection = new Telnet();
 var params = {
     host: config.tivoIP,
     port: config.tivoPort,
@@ -72,7 +72,7 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
 function sendCommand(command) {
     connection.connect(params)
         .then(function() {
-            connection.send("IRCODE "+command.toUpperCase())
+            connection.send("IRCODE "+command.toUpperCase(), {})
                 .then(function() {
                     console.log("Connected and sent code: IRCODE "+command.toUpperCase());
                 });
