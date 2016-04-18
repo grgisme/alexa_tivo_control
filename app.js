@@ -84,7 +84,7 @@ function sendCommandManual(command) {
 function sendCommand(command) {
     connection.connect(params)
         .then(function() {
-            connection.send("IRCODE "+command.toUpperCase()+"\r", {})
+            connection.exec("IRCODE "+command.toUpperCase()+"\r", {})
                 .then(function() {
                     console.log("Connected and sent code: IRCODE "+command.toUpperCase());
                 }, function(error) {
