@@ -221,12 +221,12 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
 }
 
 function sendNextCommand () {
+    clearInterval(interval);
     if(queuedCommands.length == 0) {
         if(typeof telnetSocket != "undefined" && typeof telnetSocket.end != "undefined") {
             telnetSocket.end();
             telnetSocket.destroy();
         }
-        clearInterval(interval);
         socketOpen = false;
     }
     else {
@@ -248,6 +248,7 @@ function sendNextCommand () {
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
         }
+        setTimeout(sendNextCommand, 100);
     }
 }
 
@@ -276,7 +277,7 @@ function sendCommands(commands) {
     telnetSocket.on('data', function(data) {
         noResponse = false;
         console.log("RECEIVED: "+data.toString());
-        interval = setInterval(sendNextCommand, 700);
+        interval = setInterval(sendNextCommand, 100);
     });
     telnetSocket.on('timeout', function(data) {
         console.log("TIMEOUT RECEIVED");
