@@ -291,7 +291,7 @@ function sendCommands(commands) {
         if(socketOpen)
             sendNextCommand();
     });
-    interval = setInterval(sendNextCommand, 500);
+    interval = setInterval(sendNextCommand, 750);
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
