@@ -217,14 +217,18 @@ function sendCommand(command, explicit) {
         port: port,
         host: host
     });
-    if(explicit)
-        telnetSocket.write(command.toUpperCase()+"\r");
+    if(explicit) {
+        telnetSocket.write(command.toUpperCase() + "\r");
+        console.log("Sending Command: " + command.toUpperCase());
+    }
     else {
         var prefix = determinePrefix(command);
         if(prefix === false)
             console.log("ERROR: Command Not Support: "+command);
-        else
-            telnetSocket.write(prefix+" "+command.toUpperCase()+"\r");
+        else {
+            telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
+            console.log("Sending Command: "+prefix + " " + command.toUpperCase());
+        }
     }
     telnetSocket.end();
 }
