@@ -75,6 +75,8 @@ function sendCommand(command) {
             connection.exec("IRCODE "+command.toUpperCase(), {})
                 .then(function() {
                     console.log("Connected and sent code: IRCODE "+command.toUpperCase());
+                }, function(error) {
+                    console.log('promises reject:', error)
                 });
         }, function(error) {
             console.log('promises reject:', error)
