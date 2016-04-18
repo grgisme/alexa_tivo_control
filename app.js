@@ -32,7 +32,7 @@ app.launch(function(request,response) {
 });
 
 app.intent('Pause', function(request,response) {
-    var result = sendCommand("PAUSE");
+    var result = sendCommandManual("PAUSE");
     if(result === true) {
         response.say("You told me to pause.");
     }
@@ -44,7 +44,7 @@ app.intent('Pause', function(request,response) {
 });
 
 app.intent('Play', function(request,response) {
-    var result = sendCommand("PLAY");
+    var result = sendCommandManual("PLAY");
     if(result === true) {
         response.say("You told me to play.");
     }
