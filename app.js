@@ -6,17 +6,6 @@ var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
 
-/*
-var Telnet = require('telnet-client');
-var connection = new Telnet();
-var params = {
-    host: config.tivoIP,
-    port: port,
-    shellPrompt: '',
-    timeout: 1500
-};
-*/
-
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
 express_app.use(bodyParser.json());
@@ -231,13 +220,10 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
-function sendTelnetCommand() {
-
-}
-
 function sendNextCommand () {
     if(queuedCommands.length == 0) {
-        telnetSocket.close();
+        if(typeof telnetSocket != "undefined")
+            telnetSocket.close();
         clearInterval(interval);
         socketOpen = false;
     }
