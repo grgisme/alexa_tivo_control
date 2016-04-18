@@ -2,6 +2,6 @@
   "tivoIP": "192.168.1.24",
   "tivoPort": 31339,
   "alexaAppId": "",
-  "route": "/",
+  "route": "tivo_control",
   "port": 4568
 }

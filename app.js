@@ -23,4 +23,12 @@ app.intent('play', function(request,response) {
 var express_app = express();
 express_app.listen(port);
 
+// Manually hook the handler function into express
+express_app.post('/'+route,function(req,res) {
+    app.request(req.body)        // connect express to alexa-app
+        .then(function(response) { // alexa-app returns a promise with the response
+            res.json(response);      // stream it to express' output
+        });
+});
+
 app.express(express_app, "/", true);
