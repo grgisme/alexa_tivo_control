@@ -5,11 +5,22 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
+//var telnet = require('telnet-client')
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
 express_app.use(bodyParser.json());
 express_app.set('view engine','ejs');
+
+/*
+var params = {
+    host: telnetconfig.tivoIP,
+    port: 23,
+    shellPrompt: '/ # ',
+    timeout: 1500,
+    // removeEcho: 4
+};
+*/
 
 
 
@@ -59,11 +70,11 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
 }
 
 function sendCommand(command) {
-    var tivoIp = config.tivoIp;
+    var tivoIP = config.tivoIP;
     var tivoPort = config.tivoPort;
     var client = new net.Socket();
     try {
-        client.connect(tivoPort, tivoIp, function() {
+        client.connect(tivoPort, tivoIP, function() {
             console.log('Connected and sending: ' + command.toUpperCase());
             client.write('IRCODE ' + command.toUpperCase() + '\r');
             client.destroy();
