@@ -90,7 +90,7 @@ app.intent('GoHome',
 app.intent('ChangeChannel',
     {
         "slots":{"TIVOCHANNEL":"NUMBER"},
-        "utterances":[ "{change|go to} channel {1-1000|TIVOCHANNEL}" ]
+        "utterances":[ "{change|go to} channel {1-100|TIVOCHANNEL}" ]
     },
     function(request,response) {
         changeChannel(request.slot("TIVOCHANNEL"));
@@ -99,7 +99,7 @@ app.intent('ChangeChannel',
 app.intent('ForceChannel',
     {
         "slots":{"TIVOCHANNEL":"NUMBER"},
-        "utterances":[ "force channel {1-1000|TIVOCHANNEL}" ]
+        "utterances":[ "force channel {1-100|TIVOCHANNEL}" ]
     },
     function(request,response) {
         forceChannel(request.slot("TIVOCHANNEL"));
