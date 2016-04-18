@@ -231,9 +231,12 @@ function sendNextCommand () {
     }
     else {
         var command = queuedCommands.shift();
+        var timeToWait = 100;
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
             telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
+            if(command.indexOf("TELEPORT"))
+                timeToWait = 300;
         }
         else {
             if(typeof command == "object")
@@ -247,8 +250,10 @@ function sendNextCommand () {
                 telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
+            if(prefix == "TELEPORT")
+                timeToWait = 300;
         }
-        setTimeout(sendNextCommand, 100);
+        setTimeout(sendNextCommand, timeToWait);
     }
 }
 
