@@ -6,7 +6,8 @@
   "private": true,
   "dependencies": {
     "alexa-app": "^2.3.2",
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "body-parser": "^1.15.0"
   },
   "devDependencies": {},
   "scripts": {
