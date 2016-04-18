@@ -24,7 +24,7 @@ app.intent('Pause', function(request,response) {
 });
 
 app.intent('Play', function(request,response) {
-    sendCommand("NOWSHOWING");
+    sendCommand("ADVANCE");
     response.say("OK");
 });
 
