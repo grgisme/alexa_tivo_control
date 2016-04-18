@@ -20,16 +20,28 @@ app.launch(function(request,response) {
 });
 
 app.intent('Pause', function(request,response) {
+    var result = sendCommand("PAUSE");
+    if(result === true) {
         response.say("You told me to pause.");
-        sendCommand("PAUSE");
     }
-);
+    else {
+        for(var x in result)
+            if(result.hasOwnProperty(x))
+                console.log(x+": "+result[x]);
+    }
+});
 
 app.intent('Play', function(request,response) {
+    var result = sendCommand("PLAY");
+    if(result === true) {
         response.say("You told me to play.");
-        sendCommand("PLAY");
     }
-);
+    else {
+        for(var x in result)
+            if(result.hasOwnProperty(x))
+                console.log(x+": "+result[x]);
+    }
+});
 
 // Manually hook the handler function into express
 express_app.post('/'+route,function(req,res) {
@@ -50,11 +62,17 @@ function sendCommand(command) {
     var tivoIp = config.tivoIp;
     var tivoPort = config.tivoPort;
     var client = new net.Socket();
-    client.connect(tivoPort, tivoIp, function() {
-        console.log('Connected and sending: ' + command.toUpperCase());
-        client.write('IRCODE ' + command.toUpperCase() + '\r');
-        client.destroy();
-    });
+    try {
+        client.connect(tivoPort, tivoIp, function() {
+            console.log('Connected and sending: ' + command.toUpperCase());
+            client.write('IRCODE ' + command.toUpperCase() + '\r');
+            client.destroy();
+        });
+    }
+    catch (err) {
+        return err;
+    }
+    return true;
 }
 
 
