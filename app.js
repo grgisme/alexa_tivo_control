@@ -230,13 +230,13 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
-function sendNextCommand (socket) {
+function sendNextCommand () {
     if(queuedCommands.length == 0)
-        socket.end();
+        telnetSocket.end();
     else {
         var command = queuedCommands.shift();
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
-            socket.write(command["command"].toUpperCase() + "\r", sendNextCommand);
+            telnetSocket.write(command["command"].toUpperCase() + "\r", sendNextCommand);
             console.log("Sending Command: " + command["command"].toUpperCase());
         }
         else {
@@ -245,10 +245,10 @@ function sendNextCommand (socket) {
             var prefix = determinePrefix(command);
             if(prefix === false) {
                 console.log("ERROR: Command Not Supported: " + command);
-                socket.end();
+                telnetSocket.end();
             }
             else {
-                socket.write(prefix + " " + command.toUpperCase() + "\r", sendNextCommand);
+                telnetSocket.write(prefix + " " + command.toUpperCase() + "\r", sendNextCommand);
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
         }
