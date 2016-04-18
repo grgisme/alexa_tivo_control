@@ -236,7 +236,7 @@ function sendNextCommand () {
             telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
             if(command.indexOf("TELEPORT"))
-                timeToWait = 300;
+                timeToWait = 700;
         }
         else {
             if(typeof command == "object")
@@ -251,7 +251,7 @@ function sendNextCommand () {
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
             if(prefix == "TELEPORT")
-                timeToWait = 300;
+                timeToWait = 700;
         }
         setTimeout(sendNextCommand, timeToWait);
     }
