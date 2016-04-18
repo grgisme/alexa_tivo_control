@@ -222,8 +222,10 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
 
 function sendNextCommand () {
     if(queuedCommands.length == 0) {
-        if(typeof telnetSocket != "undefined")
-            telnetSocket.close();
+        if(typeof telnetSocket != "undefined" && typeof telnetSocket.end != "undefined") {
+            telnetSocket.end();
+            telnetSocket.destroy();
+        }
         clearInterval(interval);
         socketOpen = false;
     }
@@ -315,7 +317,8 @@ function sendCommand(command, explicit) {
             console.log("Sending Command: "+prefix + " " + command.toUpperCase());
         }
     }
-    telnetSocket.close();
+    telnetSocket.end();
+    telnetSocket.destroy();
 }
 
 function changeChannel(channel) {
