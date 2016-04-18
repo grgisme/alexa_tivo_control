@@ -133,7 +133,7 @@ function sendCommand(command, explicit) {
     if(explicit)
         telnetSocket.write(command.toUpperCase()+"\r");
     else {
-        var prefix = this.determinePrefix(command);
+        var prefix = determinePrefix(command);
         if(prefix === false)
             console.log("ERROR: Command Not Support: "+command);
         else
