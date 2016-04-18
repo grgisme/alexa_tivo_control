@@ -1,5 +1,7 @@
 {
   "tivoIP": "192.168.1.24",
   "tivoPort": 31339,
-  "alexaAppId": ""
+  "alexaAppId": "",
+  "route": "/",
+  "port": 4568
 }
