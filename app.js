@@ -11,6 +11,7 @@ app.launch(function(request,response) {
 });
 
 app.intent('pause', function(request,response) {
+        console.log("PAUSING PAUSING PAUSING PAUSING PAUSING PAUSING");
         response.say("You told me to pause.");
     }
 );
