@@ -267,6 +267,7 @@ var queuedCommands = [];
 var telnetSocket;
 var socketOpen = false;
 var interval;
+var noResponse = true;
 function sendCommands(commands) {
 
     var host = config.tivoIP;
@@ -283,6 +284,7 @@ function sendCommands(commands) {
     });
     socketOpen = true;
     telnetSocket.on('data', function(data) {
+        noResponse = false;
         console.log("RECEIVED: "+data.toString());
         interval = setInterval(sendNextCommand, 700);
     });
@@ -294,6 +296,14 @@ function sendCommands(commands) {
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
+    setTimeout(function(){
+        if(noResponse) {
+            telnetSocket.write("TELEPORT GUIDE" + "\r");
+            //setTimeout(function() {
+            //    interval = setInterval(sendNextCommand, 700);
+            //}, 1500);
+        }
+    }, 700);
 }
 
 function sendCommand(command, explicit) {
