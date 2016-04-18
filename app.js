@@ -5,7 +5,16 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
-var sleep = require('sleep');
+/*
+var Telnet = require('telnet-client');
+var connection = new Telnet();
+var params = {
+    host: config.tivoIP,
+    port: port,
+    shellPrompt: '',
+    timeout: 1500
+};
+*/
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
@@ -221,34 +230,65 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
-function sendCommands(commands) {
-
-    var host = config.tivoIP;
-    var port = config.tivoPort;
-    var telnetSocket = net.createConnection({
-        port: port,
-        host: host
-    });
-    for(var i=0; i<commands.length; i++) {
-        var command = commands[i];
+function sendNextCommand (socket) {
+    if(queuedCommands.length == 0)
+        socket.end();
+    else {
+        var command = queuedCommands.shift();
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
-            telnetSocket.write(command["command"].toUpperCase() + "\r");
+            socket.write(command["command"].toUpperCase() + "\r", sendNextCommand);
             console.log("Sending Command: " + command["command"].toUpperCase());
         }
         else {
             if(typeof command == "object")
                 command = command["command"];
             var prefix = determinePrefix(command);
-            if(prefix === false)
-                console.log("ERROR: Command Not Support: "+command);
+            if(prefix === false) {
+                console.log("ERROR: Command Not Supported: " + command);
+                socket.end();
+            }
             else {
-                telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
+                socket.write(prefix + " " + command.toUpperCase() + "\r", sendNextCommand);
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
         }
-        sleep.usleep(500000);
     }
-    telnetSocket.end();
+}
+
+var queuedCommands = [];
+var telnetSocket;
+function sendCommands(commands) {
+
+    var host = config.tivoIP;
+    var port = config.tivoPort;
+    telnetSocket = net.createConnection({
+        port: port,
+        host: host
+    });
+
+    queuedCommands = [];
+    for(var i=0; i<commands.length; i++) {
+        queuedCommands.push(commands[i]);
+    }
+
+    var command = queuedCommands.shift();
+    if(typeof command == "object" && typeof command["explicit"] != "undefined") {
+        telnetSocket.write(command["command"].toUpperCase() + "\r", sendNextCommand);
+        console.log("Sending Command: " + command["command"].toUpperCase());
+    }
+    else {
+        if(typeof command == "object")
+            command = command["command"];
+        var prefix = determinePrefix(command);
+        if(prefix === false) {
+            console.log("ERROR: Command Not Supported: " + command);
+            telnetSocket.end();
+        }
+        else {
+            telnetSocket.write(prefix + " " + command.toUpperCase() + "\r", sendNextCommand);
+            console.log("Sending Command: "+prefix + " " + command.toUpperCase());
+        }
+    }
 }
 
 function sendCommand(command, explicit) {
