@@ -5,6 +5,7 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
+var sleep = require('sleep');
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
@@ -245,6 +246,7 @@ function sendCommands(commands) {
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
         }
+        sleep.usleep(500000);
     }
     telnetSocket.end();
 }
