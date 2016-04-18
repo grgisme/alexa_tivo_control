@@ -241,10 +241,6 @@ function sendNextCommand () {
     else {
         var command = queuedCommands.shift();
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
-            telnetSocket.on('data', function(data) {
-                console.log("RECEIVED: "+data.toString());
-                sendNextCommand();
-            });
             telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
         }
@@ -257,10 +253,6 @@ function sendNextCommand () {
                 telnetSocket.end();
             }
             else {
-                telnetSocket.on('data', function(data) {
-                    console.log("RECEIVED: "+data.toString());
-                    sendNextCommand();
-                });
                 telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
@@ -270,6 +262,7 @@ function sendNextCommand () {
 
 var queuedCommands = [];
 var telnetSocket;
+var socketOpen = false;
 function sendCommands(commands) {
 
     var host = config.tivoIP;
@@ -284,9 +277,18 @@ function sendCommands(commands) {
         port: port,
         host: host
     });
+    socketOpen = true;
     telnetSocket.on('data', function(data) {
         console.log("RECEIVED: "+data.toString());
         sendNextCommand();
+    });
+    telnetSocket.on('timeout', function(data) {
+        console.log("TIMEOUT RECEIVED");
+        if(socketOpen)
+            sendNextCommand();
+    });
+    telnetSocket.on('end', function(data) {
+        socketOpen = false;
     });
 }
 
@@ -299,6 +301,9 @@ function sendCommand(command, explicit) {
     var telnetSocket = net.createConnection({
         port: port,
         host: host
+    });
+    telnetSocket.on('data', function(data) {
+        console.log("RECEIVED: "+data.toString());
     });
     if(explicit) {
         telnetSocket.write(command.toUpperCase() + "\r");
