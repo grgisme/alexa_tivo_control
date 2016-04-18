@@ -5,22 +5,22 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
-//var telnet = require('telnet-client')
+var telnet = require('telnet-client');
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
 express_app.use(bodyParser.json());
 express_app.set('view engine','ejs');
 
-/*
+
+
+var connection = new telnet();
 var params = {
-    host: telnetconfig.tivoIP,
-    port: 23,
+    host: config.tivoIP,
+    port: config.tivoPort,
     shellPrompt: '/ # ',
-    timeout: 1500,
-    // removeEcho: 4
+    timeout: 1500
 };
-*/
 
 
 
@@ -70,19 +70,15 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
 }
 
 function sendCommand(command) {
-    var tivoIP = config.tivoIP;
-    var tivoPort = config.tivoPort;
-    var client = new net.Socket();
-    try {
-        client.connect(tivoPort, tivoIP, function() {
-            console.log('Connected and sending: ' + command.toUpperCase());
-            client.write('IRCODE ' + command.toUpperCase() + '\r');
-            client.destroy();
+    connection.connect(params)
+        .then(function() {
+            connection.send("IRCODE "+command.toUpperCase())
+                .then(function() {
+                    console.log("Connected and sent code: IRCODE "+comamnd.toUpperCase());
+                });
+        }, function(error) {
+            console.log('promises reject:', error)
         });
-    }
-    catch (err) {
-        return err;
-    }
     return true;
 }
 
