@@ -48,6 +48,7 @@ app.intent('LiveTV',
         "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
     },
     function(request,response) {
+        sendCommand("GUIDE");
         sendCommand("LIVETV");
     });
 
@@ -102,7 +103,7 @@ app.intent('Netflix',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} netflix" ]
     },
     function(request,response) {
-        sendCommand("LIVETV");
+        sendCommand("GUIDE");
         sendCommand("TIVO");
         sendCommand("DOWN");
         sendCommand("DOWN");
@@ -121,7 +122,7 @@ app.intent('Amazon',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} amazon {video|}" ]
     },
     function(request,response) {
-        sendCommand("LIVETV");
+        sendCommand("GUIDE");
         sendCommand("TIVO");
         sendCommand("DOWN");
         sendCommand("DOWN");
@@ -139,7 +140,7 @@ app.intent('Hulu',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} hulu" ]
     },
     function(request,response) {
-        sendCommand("LIVETV");
+        sendCommand("GUIDE");
         sendCommand("TIVO");
         sendCommand("DOWN");
         sendCommand("DOWN");
@@ -159,7 +160,7 @@ app.intent('YouTube',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|} youtube" ]
     },
     function(request,response) {
-        sendCommand("LIVETV");
+        sendCommand("GUIDE");
         sendCommand("TIVO");
         sendCommand("DOWN");
         sendCommand("DOWN");
