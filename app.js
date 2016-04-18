@@ -241,6 +241,10 @@ function sendNextCommand () {
     else {
         var command = queuedCommands.shift();
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
+            telnetSocket.on('data', function(data) {
+                console.log("RECEIVED: "+data.toString());
+                sendNextCommand();
+            });
             telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
         }
@@ -253,6 +257,10 @@ function sendNextCommand () {
                 telnetSocket.end();
             }
             else {
+                telnetSocket.on('data', function(data) {
+                    console.log("RECEIVED: "+data.toString());
+                    sendNextCommand();
+                });
                 telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
