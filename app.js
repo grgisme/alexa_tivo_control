@@ -120,6 +120,7 @@ function openMusicCommands(commands) {
     commands.push("DOWN");
     commands.push("DOWN");
     commands.push("DOWN");
+    commands.push("DOWN");
     if(tivoMini)
         commands.push("DOWN");
     commands.push("RIGHT");
