@@ -284,14 +284,13 @@ function sendCommands(commands) {
     socketOpen = true;
     telnetSocket.on('data', function(data) {
         console.log("RECEIVED: "+data.toString());
-        sendNextCommand();
+        interval = setInterval(sendNextCommand, 700);
     });
     telnetSocket.on('timeout', function(data) {
         console.log("TIMEOUT RECEIVED");
         if(socketOpen)
             sendNextCommand();
     });
-    interval = setInterval(sendNextCommand, 750);
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
