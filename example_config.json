@@ -3,5 +3,6 @@
   "tivoPort": 31339,
   "alexaAppId": "",
   "route": "tivo_control",
-  "port": 4568
+  "port": 4568,
+  "tivoMini": false
 }

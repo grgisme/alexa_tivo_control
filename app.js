@@ -5,6 +5,7 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
+var tivoMini = config.tivoMini;
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
@@ -48,8 +49,13 @@ app.intent('LiveTV',
         "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
     },
     function(request,response) {
-        sendCommand("GUIDE");
-        sendCommand("LIVETV");
+        if(!tivoMini) {
+            sendCommand("GUIDE");
+            sendCommand("LIVETV");
+        }
+        else {
+            sendCommand("IRCODE LIVETV", true);
+        }
     });
 
 app.intent('Play',
@@ -100,7 +106,7 @@ app.intent('GoHome',
 app.intent('Netflix',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} netflix" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} netflix" ]
     },
     function(request,response) {
         var commands = [
@@ -122,7 +128,7 @@ app.intent('Netflix',
 app.intent('Amazon',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} amazon {video|}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} amazon {video|}" ]
     },
     function(request,response) {
         var commands = [
@@ -143,7 +149,7 @@ app.intent('Amazon',
 app.intent('Hulu',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} hulu" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hulu" ]
     },
     function(request,response) {
         var commands = [
@@ -166,7 +172,7 @@ app.intent('Hulu',
 app.intent('YouTube',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} youtube" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} youtube" ]
     },
     function(request,response) {
         var commands = [
@@ -190,7 +196,7 @@ app.intent('YouTube',
 app.intent('MBLTV',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} {the|} {mlb|baseball|mlb tv|major league baseball|major league baseball tv}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {the|} {mlb|baseball|mlb tv|major league baseball|major league baseball tv}" ]
     },
     function(request,response) {
         var commands = [
@@ -215,7 +221,7 @@ app.intent('MBLTV',
 app.intent('Plex',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} plex" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} plex" ]
     },
     function(request,response) {
         var commands = [
@@ -241,12 +247,78 @@ app.intent('Plex',
 app.intent('HBOGo',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|} hbo {go|}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hbo {go|}" ]
     },
     function(request,response) {
         var commands = [
             "GUIDE",
             "TIVO",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "RIGHT"
+        ];
+        sendCommands(commands);
+    });
+
+app.intent('Pandora',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} pandora", "play {music|music on pandora|pandora}" ]
+    },
+    function(request,response) {
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "RIGHT"
+        ];
+        sendCommands(commands);
+    });
+
+app.intent('Spotify',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} spotify", "play {music|music on|} spotify" ]
+    },
+    function(request,response) {
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "DOWN",
+            "RIGHT",
+            "DOWN",
+            "DOWN",
+            "RIGHT"
+        ];
+        sendCommands(commands);
+    });
+
+app.intent('iHeartRadio',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} iheartradio", "play {music|music on|} iheartradio" ]
+    },
+    function(request,response) {
+        var commands = [
+            "GUIDE",
+            "TIVO",
+            "DOWN",
+            "DOWN",
+            "DOWN",
             "DOWN",
             "DOWN",
             "RIGHT",
@@ -355,7 +427,8 @@ function sendCommands(commands) {
     telnetSocket.on('data', function(data) {
         noResponse = false;
         console.log("RECEIVED: "+data.toString());
-        interval = setInterval(sendNextCommand, 100);
+        if(!tivoMini)
+            interval = setInterval(sendNextCommand, 100);
     });
     telnetSocket.on('timeout', function(data) {
         console.log("TIMEOUT RECEIVED");
@@ -369,6 +442,10 @@ function sendCommands(commands) {
     setTimeout(function(){
         if(noResponse) {
             telnetSocket.write("TELEPORT GUIDE" + "\r");
+            if(tivoMini) {
+                //Tivo Mini's don't respond with a Channel response on the primary menu or guide, so we'll set another timeout
+                setTimeout(sendNextCommand, 1000);
+            }
         }
     }, 700);
 }
