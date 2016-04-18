@@ -236,8 +236,11 @@ function sendTelnetCommand() {
 }
 
 function sendNextCommand () {
-    if(queuedCommands.length == 0)
+    if(queuedCommands.length == 0) {
         telnetSocket.end();
+        clearInterval(interval);
+        socketOpen = false;
+    }
     else {
         var command = queuedCommands.shift();
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
@@ -263,6 +266,7 @@ function sendNextCommand () {
 var queuedCommands = [];
 var telnetSocket;
 var socketOpen = false;
+var interval;
 function sendCommands(commands) {
 
     var host = config.tivoIP;
@@ -287,6 +291,7 @@ function sendCommands(commands) {
         if(socketOpen)
             sendNextCommand();
     });
+    interval = setInterval(sendNextCommand, 500);
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
