@@ -237,7 +237,7 @@ function sendTelnetCommand() {
 
 function sendNextCommand () {
     if(queuedCommands.length == 0) {
-        telnetSocket.end();
+        telnetSocket.close();
         clearInterval(interval);
         socketOpen = false;
     }
@@ -299,9 +299,6 @@ function sendCommands(commands) {
     setTimeout(function(){
         if(noResponse) {
             telnetSocket.write("TELEPORT GUIDE" + "\r");
-            //setTimeout(function() {
-            //    interval = setInterval(sendNextCommand, 700);
-            //}, 1500);
         }
     }, 700);
 }
@@ -332,7 +329,7 @@ function sendCommand(command, explicit) {
             console.log("Sending Command: "+prefix + " " + command.toUpperCase());
         }
     }
-    telnetSocket.end();
+    telnetSocket.close();
 }
 
 function changeChannel(channel) {
