@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
 var Telnet = require('telnet-client');
+var socket = new net.Socket();
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
@@ -69,10 +70,21 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
+function sendCommandManual(command) {
+    var host = config.tivoIP;
+    var port = config.tivoPort;
+    var telnetSocket = net.createConnection({
+        port: port,
+        host: host
+    });
+    telnetSocket.write("IRCODE "+command.toUpperCase()+"\r");
+    telnetSocket.end();
+}
+
 function sendCommand(command) {
     connection.connect(params)
         .then(function() {
-            connection.exec("IRCODE "+command.toUpperCase(), {})
+            connection.send("IRCODE "+command.toUpperCase()+"\r", {})
                 .then(function() {
                     console.log("Connected and sent code: IRCODE "+command.toUpperCase());
                 }, function(error) {
