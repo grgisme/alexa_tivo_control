@@ -5,6 +5,7 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
+
 /*
 var Telnet = require('telnet-client');
 var connection = new Telnet();
@@ -230,13 +231,17 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
+function sendTelnetCommand() {
+
+}
+
 function sendNextCommand () {
     if(queuedCommands.length == 0)
         telnetSocket.end();
     else {
         var command = queuedCommands.shift();
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
-            telnetSocket.write(command["command"].toUpperCase() + "\r", sendNextCommand);
+            telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
         }
         else {
@@ -248,7 +253,7 @@ function sendNextCommand () {
                 telnetSocket.end();
             }
             else {
-                telnetSocket.write(prefix + " " + command.toUpperCase() + "\r", sendNextCommand);
+                telnetSocket.write(prefix + " " + command.toUpperCase() + "\r");
                 console.log("Sending Command: "+prefix + " " + command.toUpperCase());
             }
         }
@@ -261,37 +266,20 @@ function sendCommands(commands) {
 
     var host = config.tivoIP;
     var port = config.tivoPort;
-    telnetSocket = net.createConnection({
-        port: port,
-        host: host
-    });
-    telnetSocket.on('data', function(data) {
-        console.log("RECEIVED: "+data.toString());
-    });
 
     queuedCommands = [];
     for(var i=0; i<commands.length; i++) {
         queuedCommands.push(commands[i]);
     }
 
-    var command = queuedCommands.shift();
-    if(typeof command == "object" && typeof command["explicit"] != "undefined") {
-        telnetSocket.write(command["command"].toUpperCase() + "\r", sendNextCommand);
-        console.log("Sending Command: " + command["command"].toUpperCase());
-    }
-    else {
-        if(typeof command == "object")
-            command = command["command"];
-        var prefix = determinePrefix(command);
-        if(prefix === false) {
-            console.log("ERROR: Command Not Supported: " + command);
-            telnetSocket.end();
-        }
-        else {
-            telnetSocket.write(prefix + " " + command.toUpperCase() + "\r", sendNextCommand);
-            console.log("Sending Command: "+prefix + " " + command.toUpperCase());
-        }
-    }
+    telnetSocket = net.createConnection({
+        port: port,
+        host: host
+    });
+    telnetSocket.on('data', function(data) {
+        console.log("RECEIVED: "+data.toString());
+        sendNextCommand();
+    });
 }
 
 function sendCommand(command, explicit) {
