@@ -30,7 +30,7 @@ app.intent('SendCommand',
         "utterances":[ "send {the|} {command|} {commands|TIVOCOMMAND}" ]
     },
     function(request,response) {
-        sendCommand(request.slot("TIVOCOMMAND"));
+        sendCommand(request.slot("TIVOCOMMAND").toUpperCase());
     });
 
 app.intent('Pause',
