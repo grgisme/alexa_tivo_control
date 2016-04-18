@@ -1,9 +1,10 @@
 var alexa = require('alexa-app');
-var app = new alexa.app('tivo_control');
 var config = require("./config.json");
-var route = config.route || "/";
+var route = config.route || "tivo_control";
 var port = config.port || "80";
 var express = require('express');
+
+var app = new alexa.app(route);
 
 app.launch(function(request,response) {
     response.say("Welcome to Tivo Control");
@@ -22,4 +23,4 @@ app.intent('play', function(request,response) {
 var express_app = express();
 express_app.listen(port);
 
-app.express(express_app, route, false);
+app.express(express_app, "/", false);
