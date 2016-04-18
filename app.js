@@ -401,10 +401,11 @@ function sendCommands(commands) {
     console.log("Connection Created");
     socketOpen = true;
     telnetSocket.on('data', function(data) {
-        noResponse = false;
-        console.log("RECEIVED: "+data.toString());
-        if(!tivoMini)
+        if(noResponse) {
+            noResponse = false;
+            console.log("RECEIVED: "+data.toString());
             interval = setInterval(sendNextCommand, 100);
+        }
     });
     telnetSocket.on('timeout', function(data) {
         console.log("TIMEOUT RECEIVED");
