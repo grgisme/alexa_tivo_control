@@ -231,7 +231,9 @@ function sendNextCommand () {
     }
     else {
         var command = queuedCommands.shift();
-        var timeToWait = 250;
+        var timeToWait = 100;
+        if(queuedCommands[0] == "RIGHT" || queuedCommands[0] == "ENTER")
+            timeToWait = 500;
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
             telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
