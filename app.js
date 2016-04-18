@@ -18,15 +18,92 @@ app.launch(function(request,response) {
     response.say("Welcome to Tivo Control");
 });
 
-app.intent('Pause', function(request,response) {
-    sendCommand("PAUSE");
-    response.say("OK");
+var IRCODE_COMMANDS = ["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "LIVETV", "GUIDE", "INFO", "EXIT", "THUMBSUP", "THUMBSDOWN", "CHANNELUP", "CHANNELDOWN", "MUTE", "VOLUMEUP", "VOLUMEDOWN", "TVINPUT", "VIDEO_MODE_FIXED_480i", "VIDEO_MODE_FIXED_480p", "VIDEO_MODE_FIXED_720p", "VIDEO_MODE_FIXED_1080i", "VIDEO_MODE_HYBRID", "VIDEO_MODE_HYBRID_720p", "VIDEO_MODE_HYBRID_1080i", "VIDEO_MODE_NATIVE", "CC_ON", "CC_OFF", "OPTIONS", "ASPECT_CORRECTION_FULL", "ASPECT_CORRECTION_PANEL", "ASPECT_CORRECTION_ZOOM", "ASPECT_CORRECTION_WIDE_ZOOM", "PLAY", "FORWARD", "REVERSE", "PAUSE", "SLOW", "REPLAY", "ADVANCE", "RECORD", "NUM0", "NUM1", "NUM2", "NUM3", "NUM4", "NUM5", "NUM6", "NUM7", "NUM8", "NUM9", "ENTER", "CLEAR", "ACTION_A", "ACTION_B", "ACTION_C", "ACTION_D"];
+var KEYBOARD_COMMANDS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "MINUS", "EQUALS", "LBRACKET", "RBRACKET", "BACKSLASH", "SEMICOLON", "QUOTE", "COMMA", "PERIOD", "SLASH", "BACKQUOTE", "SPACE", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "STOP", "VIDEO_ON_DEMAND"];
+var TELEPORT_COMMANDS = ["TIVO", "LIVETV", "GUIDE", "NOWPLAYING"];
+
+app.dictionary = {"commands":["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "LIVETV", "THUMBSUP", "THUMBSDOWN", "CHANNELUP", "CHANNELDOWN", "MUTE", "VOLUMEDOWN", "VOLUMEUP", "TVINPUT", "VIDEO_MODE_FIXED_480i", "VIDEO_MODE_FIXED_480p", "VIDEO_MODE_FIXED_720p", "VIDEO_MODE_FIXED_1080i", "VIDEO_MODE_HYBRID", "VIDEO_MODE_HYBRID_720p", "VIDEO_MODE_HYBRID_1080i", "VIDEO_MODE_NATIVE", "CC_ON", "CC_OFF", "OPTIONS", "ASPECT_CORRECTION_FULL", "ASPECT_CORRECTION_PANEL", "ASPECT_CORRECTION_ZOOM", "ASPECT_CORRECTION_WIDE_ZOOM", "RECORD", "DISPLAY", "DIRECTV", "NUM0", "NUM1", "NUM2", "NUM3", "NUM4", "NUM5", "NUM6", "NUM7", "NUM8", "NUM9", "ENTER", "CLEAR", "PLAY", "PAUSE", "SLOW", "FORWARD", "REVERSE", "STANDBY", "NOWSHOWING", "REPLAY", "ADVANCE", "DELIMITER", "GUIDE", "ACTION_A", "ACTION_B", "ACTION_C", "ACTION_D", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "SPACE", "BACKQUOTE", "SLASH", "PERIOD", "COMMA", "QUOTE", "SEMICOLON", "BACKSLASH", "RBRACKET", "LBRACKET", "EQUALS", "MINUS", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "VIDEO_ON_DEMAND", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]};
+
+app.intent('SendCommand',
+    {
+        "slots":{"TIVOCOMMAND":"LITERAL"},
+        "utterances":[ "send {the|} {command|} {commands|TIVOCOMMAND}" ]
+    },
+    function(request,response) {
+        sendCommand(request.slot("TIVOCOMMAND"));
+    });
+
+app.intent('Pause',
+    {
+        "slots":{},
+        "utterances":[ "pause" ]
+    },
+    function(request,response) {
+        sendCommand("PAUSE");
 });
 
-app.intent('Play', function(request,response) {
-    sendCommand("DELIMITER");
-    response.say("OK");
+app.intent('Play',
+    {
+        "slots":{},
+        "utterances":[ "play" ]
+    },
+    function(request,response) {
+        sendCommand("PLAY");
 });
+
+app.intent('FastForward',
+    {
+        "slots":{},
+        "utterances":[ "fast forward" ]
+    },
+    function(request,response) {
+        sendCommand("FORWARD");
+});
+
+app.intent('SkipCommerial',
+    {
+        "slots":{},
+        "utterances":[ "skip {the|} {this|} {commercial|forward|ahead}" ]
+    },
+    function(request,response) {
+        sendCommand("ACTION_D");
+});
+
+app.intent('Record',
+    {
+        "slots":{},
+        "utterances":[ "record {this|the|} {show|current show|this}" ]
+    },
+    function(request,response) {
+        sendCommand("RECORD");
+});
+
+app.intent('GoHome',
+    {
+        "slots":{},
+        "utterances":[ "{show|go} {to the|} home {screen|}" ]
+    },
+    function(request,response) {
+        sendCommand("TIVO");
+    });
+
+app.intent('ChangeChannel',
+    {
+        "slots":{"TIVOCHANNEL":"NUMBER"},
+        "utterances":[ "{change|go to} channel {1-1000|TIVOCHANNEL}" ]
+    },
+    function(request,response) {
+        changeChannel(request.slot("TIVOCHANNEL"));
+    });
+
+app.intent('ForceChannel',
+    {
+        "slots":{"TIVOCHANNEL":"NUMBER"},
+        "utterances":[ "force channel {1-1000|TIVOCHANNEL}" ]
+    },
+    function(request,response) {
+        forceChannel(request.slot("TIVOCHANNEL"));
+    });
 
 // Manually hook the handler function into express
 express_app.post('/'+route,function(req,res) {
@@ -43,15 +120,45 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
-function sendCommand(command) {
+function sendCommand(command, explicit) {
+    if(typeof explicit == "undefined") {
+        explicit = false;
+    }
     var host = config.tivoIP;
     var port = config.tivoPort;
     var telnetSocket = net.createConnection({
         port: port,
         host: host
     });
-    telnetSocket.write("IRCODE "+command.toUpperCase()+"\r");
+    if(explicit)
+        telnetSocket.write(command.toUpperCase()+"\r");
+    else {
+        var prefix = this.determinePrefix(command);
+        if(prefix === false)
+            console.log("ERROR: Command Not Support: "+command);
+        else
+            telnetSocket.write(prefix+" "+command.toUpperCase()+"\r");
+    }
     telnetSocket.end();
+}
+
+function changeChannel(channel) {
+    return sendCommand("SETCH "+channel, true);
+}
+
+function forceChannel(channel) {
+    return sendCommand("FORCECH "+channel, true);
+}
+
+function determinePrefix(command) {
+    if(TELEPORT_COMMANDS.indexOf(command) != -1)
+        return "TELEPORT";
+    else if(IRCODE_COMMANDS.indexOf(command) != -1)
+        return "IRCODE";
+    else if(KEYBOARD_COMMANDS.indexOf(command) != -1)
+        return "KEYBOARD";
+    else
+        return false;
 }
 
 
