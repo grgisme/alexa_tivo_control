@@ -22,7 +22,7 @@ var IRCODE_COMMANDS = ["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "LIVETV"
 var KEYBOARD_COMMANDS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "MINUS", "EQUALS", "LBRACKET", "RBRACKET", "BACKSLASH", "SEMICOLON", "QUOTE", "COMMA", "PERIOD", "SLASH", "BACKQUOTE", "SPACE", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "STOP", "VIDEO_ON_DEMAND"];
 var TELEPORT_COMMANDS = ["TIVO", "LIVETV", "GUIDE", "NOWPLAYING"];
 
-app.dictionary = {"commands":["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "LIVETV", "THUMBSUP", "THUMBSDOWN", "CHANNELUP", "CHANNELDOWN", "MUTE", "VOLUMEDOWN", "VOLUMEUP", "TVINPUT", "OPTIONS", "RECORD", "DISPLAY", "DIRECTV", "ENTER", "CLEAR", "PLAY", "PAUSE", "SLOW", "FORWARD", "REVERSE", "STANDBY", "NOWSHOWING", "REPLAY", "ADVANCE", "DELIMITER", "GUIDE", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "SPACE", "BACKQUOTE", "SLASH", "PERIOD", "COMMA", "QUOTE", "SEMICOLON", "BACKSLASH", "RBRACKET", "LBRACKET", "EQUALS", "MINUS", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]};
+app.dictionary = {"commands":["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "THUMBSUP", "THUMBSDOWN", "CHANNELUP", "CHANNELDOWN", "MUTE", "VOLUMEDOWN", "VOLUMEUP", "TVINPUT", "OPTIONS", "RECORD", "DISPLAY", "DIRECTV", "ENTER", "CLEAR", "PLAY", "PAUSE", "SLOW", "FORWARD", "REVERSE", "STANDBY", "NOWSHOWING", "REPLAY", "ADVANCE", "DELIMITER", "GUIDE", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "SPACE", "BACKQUOTE", "SLASH", "PERIOD", "COMMA", "QUOTE", "SEMICOLON", "BACKSLASH", "RBRACKET", "LBRACKET", "EQUALS", "MINUS", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]};
 
 app.intent('SendCommand',
     {
@@ -41,6 +41,15 @@ app.intent('Pause',
     function(request,response) {
         sendCommand("PAUSE");
 });
+
+app.intent('LiveTV',
+    {
+        "slots":{},
+        "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
+    },
+    function(request,response) {
+        sendCommand("LIVETV");
+    });
 
 app.intent('Play',
     {
@@ -85,6 +94,84 @@ app.intent('GoHome',
     },
     function(request,response) {
         sendCommand("TIVO");
+    });
+
+app.intent('Netflix',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} netflix" ]
+    },
+    function(request,response) {
+        sendCommand("LIVETV");
+        sendCommand("TIVO");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("RIGHT");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("ENTER");
+    });
+
+app.intent('Amazon',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} amazon {video|}" ]
+    },
+    function(request,response) {
+        sendCommand("LIVETV");
+        sendCommand("TIVO");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("RIGHT");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("ENTER");
+    });
+
+app.intent('Hulu',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} hulu" ]
+    },
+    function(request,response) {
+        sendCommand("LIVETV");
+        sendCommand("TIVO");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("RIGHT");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("ENTER");
+    });
+
+app.intent('YouTube',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|} youtube" ]
+    },
+    function(request,response) {
+        sendCommand("LIVETV");
+        sendCommand("TIVO");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("RIGHT");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("DOWN");
+        sendCommand("ENTER");
     });
 
 app.intent('ChangeChannel',
