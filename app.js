@@ -351,7 +351,7 @@ function sendNextCommand () {
         var command = queuedCommands.shift();
         var timeToWait = 100;
         if(queuedCommands[0] == "RIGHT" || queuedCommands[0] == "ENTER")
-            timeToWait = 500;
+            timeToWait = 700;
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
             telnetSocket.write(command["command"].toUpperCase() + "\r");
             console.log("Sending Command: " + command["command"].toUpperCase());
@@ -418,8 +418,8 @@ function sendCommands(commands) {
         if(noResponse) {
             telnetSocket.write("TELEPORT GUIDE" + "\r");
             if(tivoMini) {
-                //Tivo Mini's don't respond with a Channel response on the primary menu or guide, so we'll set another timeout
-                setTimeout(sendNextCommand, 1000);
+                //Tivo Mini's don't respond with a Channel response on the primary menu or guide, so we'll set another timeout.
+                setTimeout(sendNextCommand, 2500);
             }
         }
     }, 700);
