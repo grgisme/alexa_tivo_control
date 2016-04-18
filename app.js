@@ -5,24 +5,11 @@ var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
 var net = require('net');
-var Telnet = require('telnet-client');
-var socket = new net.Socket();
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
 express_app.use(bodyParser.json());
 express_app.set('view engine','ejs');
-
-
-
-var connection = new Telnet();
-var params = {
-    host: config.tivoIP,
-    port: config.tivoPort,
-    shellPrompt: '',
-    timeout: 1500
-};
-
 
 
 var app = new alexa.app(route);
@@ -32,27 +19,13 @@ app.launch(function(request,response) {
 });
 
 app.intent('Pause', function(request,response) {
-    var result = sendCommandManual("PAUSE");
-    if(result === true) {
-        response.say("You told me to pause.");
-    }
-    else {
-        for(var x in result)
-            if(result.hasOwnProperty(x))
-                console.log(x+": "+result[x]);
-    }
+    sendCommand("PAUSE");
+    response.say("OK");
 });
 
 app.intent('Play', function(request,response) {
-    var result = sendCommandManual("PLAY");
-    if(result === true) {
-        response.say("You told me to play.");
-    }
-    else {
-        for(var x in result)
-            if(result.hasOwnProperty(x))
-                console.log(x+": "+result[x]);
-    }
+    sendCommand("PLAY");
+    response.say("OK");
 });
 
 // Manually hook the handler function into express
@@ -70,7 +43,7 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.utterances ());
 }
 
-function sendCommandManual(command) {
+function sendCommand(command) {
     var host = config.tivoIP;
     var port = config.tivoPort;
     var telnetSocket = net.createConnection({
@@ -79,21 +52,6 @@ function sendCommandManual(command) {
     });
     telnetSocket.write("IRCODE "+command.toUpperCase()+"\r");
     telnetSocket.end();
-}
-
-function sendCommand(command) {
-    connection.connect(params)
-        .then(function() {
-            connection.exec("IRCODE "+command.toUpperCase()+"\r", {})
-                .then(function() {
-                    console.log("Connected and sent code: IRCODE "+command.toUpperCase());
-                }, function(error) {
-                    console.log('promises reject:', error)
-                });
-        }, function(error) {
-            console.log('promises reject:', error)
-        });
-    return true;
 }
 
 
