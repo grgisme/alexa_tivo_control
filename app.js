@@ -265,11 +265,13 @@ function sendCommands(commands) {
     for(var i=0; i<commands.length; i++) {
         queuedCommands.push(commands[i]);
     }
+    console.log("QueuedCommands: "+queuedCommands.join(","));
 
     telnetSocket = net.createConnection({
         port: port,
         host: host
     });
+    console.log("Connection Created");
     socketOpen = true;
     telnetSocket.on('data', function(data) {
         noResponse = false;
@@ -284,6 +286,7 @@ function sendCommands(commands) {
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
+    noResponse = true;
     setTimeout(function(){
         if(noResponse) {
             telnetSocket.write("TELEPORT GUIDE" + "\r");
