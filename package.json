@@ -5,7 +5,8 @@
   "main": "app.js",
   "private": true,
   "dependencies": {
-    "alexa-app": "^2.3.2"
+    "alexa-app": "^2.3.2",
+    "express": "^4.13.4"
   },
   "devDependencies": {},
   "scripts": {
