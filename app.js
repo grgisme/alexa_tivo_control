@@ -4,6 +4,7 @@ var route = config.route || "tivo_control";
 var port = process.env.port || config.port || 8080;
 var bodyParser = require('body-parser');
 var express = require('express');
+var net = require('net');
 
 var express_app = express();
 express_app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,13 +20,14 @@ app.launch(function(request,response) {
 });
 
 app.intent('Pause', function(request,response) {
-        console.log("PAUSING PAUSING PAUSING PAUSING PAUSING PAUSING");
         response.say("You told me to pause.");
+        sendCommand("PAUSE");
     }
 );
 
 app.intent('Play', function(request,response) {
         response.say("You told me to play.");
+        sendCommand("PLAY");
     }
 );
 
@@ -43,5 +45,17 @@ if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
     console.log (app.schema ());
     console.log (app.utterances ());
 }
+
+function sendCommand(command) {
+    var tivoIp = config.tivoIp;
+    var tivoPort = config.tivoPort;
+    var client = new net.Socket();
+    client.connect(tivoPort, tivoIp, function() {
+        console.log('Connected and sending: ' + command.toUpperCase());
+        client.write('IRCODE ' + command.toUpperCase() + '\r');
+        client.destroy();
+    });
+}
+
 
 express_app.listen(port);
