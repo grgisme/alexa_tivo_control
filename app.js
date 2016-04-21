@@ -350,7 +350,7 @@ function sendNextCommand () {
     }
     else {
         var command = queuedCommands.shift();
-        var timeToWait = 100;
+        var timeToWait = 300;
         if(queuedCommands[0] == "RIGHT" || queuedCommands[0] == "ENTER")
             timeToWait = 700;
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
@@ -404,7 +404,7 @@ function sendCommands(commands) {
         if(noResponse) {
             noResponse = false;
             console.log("RECEIVED: "+data.toString());
-            interval = setInterval(sendNextCommand, 100);
+            interval = setInterval(sendNextCommand, 300);
         }
     });
     telnetSocket.on('timeout', function(data) {
