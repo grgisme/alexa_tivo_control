@@ -1,29 +1,46 @@
+// load required modules
 var alexa = require('alexa-app');
-var config = require("./config.json");
-var route = config.route || "tivo_control";
-var port = process.env.port || config.port || 8080;
-var bodyParser = require('body-parser');
-var express = require('express');
 var net = require('net');
+
+// Allow this module to be reloaded by hotswap when changed
+module.change_code = 1;
+
+// load configuration parameters (or set defaults)
+var config   = require("./config.json");
+var port     = process.env.port || config.port || 8080;
 var tivoMini = config.tivoMini;
+var route = config.route || "tivo_control";
 
-var express_app = express();
-express_app.use(bodyParser.urlencoded({ extended: true }));
-express_app.use(bodyParser.json());
-express_app.set('view engine','ejs');
+// define variables
+var queuedCommands = [];
+var telnetSocket;
+var socketOpen = false;
+var interval;
+var noResponse = true;
 
-
+// Define an alexa-app
 var app = new alexa.app(route);
 
+// launch
 app.launch(function(request,response) {
     response.say("Welcome to Tivo Control");
 });
 
+if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
+    console.log (app.schema ());
+    console.log (app.utterances ());
+}
+
+// command-grouping arrays
 var IRCODE_COMMANDS = ["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "LIVETV", "GUIDE", "INFO", "EXIT", "THUMBSUP", "THUMBSDOWN", "CHANNELUP", "CHANNELDOWN", "MUTE", "VOLUMEUP", "VOLUMEDOWN", "TVINPUT", "VIDEO_MODE_FIXED_480i", "VIDEO_MODE_FIXED_480p", "VIDEO_MODE_FIXED_720p", "VIDEO_MODE_FIXED_1080i", "VIDEO_MODE_HYBRID", "VIDEO_MODE_HYBRID_720p", "VIDEO_MODE_HYBRID_1080i", "VIDEO_MODE_NATIVE", "CC_ON", "CC_OFF", "OPTIONS", "ASPECT_CORRECTION_FULL", "ASPECT_CORRECTION_PANEL", "ASPECT_CORRECTION_ZOOM", "ASPECT_CORRECTION_WIDE_ZOOM", "PLAY", "FORWARD", "REVERSE", "PAUSE", "SLOW", "REPLAY", "ADVANCE", "RECORD", "NUM0", "NUM1", "NUM2", "NUM3", "NUM4", "NUM5", "NUM6", "NUM7", "NUM8", "NUM9", "ENTER", "CLEAR", "ACTION_A", "ACTION_B", "ACTION_C", "ACTION_D"];
+
 var KEYBOARD_COMMANDS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "MINUS", "EQUALS", "LBRACKET", "RBRACKET", "BACKSLASH", "SEMICOLON", "QUOTE", "COMMA", "PERIOD", "SLASH", "BACKQUOTE", "SPACE", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "STOP", "VIDEO_ON_DEMAND"];
+
 var TELEPORT_COMMANDS = ["TIVO", "LIVETV", "GUIDE", "NOWPLAYING"];
 
 app.dictionary = {"commands":["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "THUMBSUP", "THUMBSDOWN", "CHANNELUP", "CHANNELDOWN", "MUTE", "VOLUMEDOWN", "VOLUMEUP", "TVINPUT", "OPTIONS", "RECORD", "DISPLAY", "DIRECTV", "ENTER", "CLEAR", "PLAY", "PAUSE", "SLOW", "FORWARD", "REVERSE", "STANDBY", "NOWSHOWING", "REPLAY", "ADVANCE", "DELIMITER", "GUIDE", "KBDUP", "KBDDOWN", "KBDLEFT", "KBDRIGHT", "PAGEUP", "PAGEDOWN", "HOME", "END", "SPACE", "BACKQUOTE", "SLASH", "PERIOD", "COMMA", "QUOTE", "SEMICOLON", "BACKSLASH", "RBRACKET", "LBRACKET", "EQUALS", "MINUS", "CAPS", "LSHIFT", "RSHIFT", "INSERT", "BACKSPACE", "DELETE", "KBDENTER", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]};
+
+// intents -------------------------------------------------------------
 
 app.intent('SendCommand',
     {
@@ -40,7 +57,9 @@ app.intent('Pause',
         "utterances":[ "pause" ]
     },
     function(request,response) {
-        sendCommand("PAUSE");
+        var commands = [];
+        commands.push("PAUSE");
+        sendCommands(commands);
 });
 
 app.intent('LiveTV',
@@ -49,12 +68,15 @@ app.intent('LiveTV',
         "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
     },
     function(request,response) {
+        var commands = [];
         if(!tivoMini) {
-            sendCommand("GUIDE");
-            sendCommand("LIVETV");
+            commands.push("GUIDE");   // TEST: is this needed?
+            commands.push("LIVETV");
+            sendCommands(commands);
         }
         else {
-            sendCommand("IRCODE LIVETV", true);
+            commands.push("LIVETV");
+            sendCommands(commands);
         }
     });
 
@@ -64,7 +86,9 @@ app.intent('Play',
         "utterances":[ "play" ]
     },
     function(request,response) {
-        sendCommand("PLAY");
+        var commands = [];
+        commands.push("PLAY");
+        sendCommands(commands);
 });
 
 app.intent('FastForward',
@@ -73,7 +97,9 @@ app.intent('FastForward',
         "utterances":[ "fast forward" ]
     },
     function(request,response) {
-        sendCommand("FORWARD");
+        var commands = [];
+        commands.push("FORWARD");
+        sendCommands(commands);
 });
 
 app.intent('SkipCommerial',
@@ -82,7 +108,9 @@ app.intent('SkipCommerial',
         "utterances":[ "skip {the|} {this|} {commercial|forward|ahead}" ]
     },
     function(request,response) {
-        sendCommand("ACTION_D");
+        var commands = [];
+        commands.push("ACTION_D");
+        sendCommands(commands);
 });
 
 app.intent('Record',
@@ -91,7 +119,9 @@ app.intent('Record',
         "utterances":[ "record {this|the|} {show|current show|this}" ]
     },
     function(request,response) {
-        sendCommand("RECORD");
+        var commands = [];
+        commands.push("RECORD");  // TEST: need extra action to actually record
+        sendCommands(commands);
 });
 
 app.intent('GoHome',
@@ -100,32 +130,10 @@ app.intent('GoHome',
         "utterances":[ "{show|go} {to the|} home {screen|}" ]
     },
     function(request,response) {
-        sendCommand("TIVO");
+        var commands = [];
+        commands.push("TIVO");
+        sendCommands(commands);
     });
-
-function addInitCommands(commands) {
-    commands.push("GUIDE");
-    commands.push("TIVO");
-    return commands;
-}
-function openMediaCommands(commands) {
-    commands.push("DOWN");
-    commands.push("DOWN");
-    if(tivoMini)
-        commands.push("DOWN");
-    commands.push("RIGHT");
-    return commands;
-}
-function openMusicCommands(commands) {
-    commands.push("DOWN");
-    commands.push("DOWN");
-    commands.push("DOWN");
-    commands.push("DOWN");
-    if(tivoMini)
-        commands.push("DOWN");
-    commands.push("RIGHT");
-    return commands;
-}
 
 app.intent('Netflix',
     {
@@ -324,20 +332,8 @@ app.intent('ForceChannel',
         forceChannel(request.slot("TIVOCHANNEL"));
     });
 
-// Manually hook the handler function into express
-express_app.post('/'+route,function(req,res) {
-    app.request(req.body)        // connect express to alexa-app
-        .then(function(response) { // alexa-app returns a promise with the response
-            res.json(response);      // stream it to express' output
-        });
-});
 
-app.express(express_app, "/", true);
-
-if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
-    console.log (app.schema ());
-    console.log (app.utterances ());
-}
+// functions -----------------------------------------------------------
 
 function sendNextCommand () {
     clearInterval(interval);
@@ -378,11 +374,6 @@ function sendNextCommand () {
     }
 }
 
-var queuedCommands = [];
-var telnetSocket;
-var socketOpen = false;
-var interval;
-var noResponse = true;
 function sendCommands(commands) {
 
     var host = config.tivoIP;
@@ -458,23 +449,58 @@ function sendCommand(command, explicit) {
 }
 
 function changeChannel(channel) {
-    return sendCommand("SETCH "+channel, true);
+    var commands = [];
+    commands.push("SETCH "+channel);
+    return sendCommands(commands, true);
 }
 
 function forceChannel(channel) {
-    return sendCommand("FORCECH "+channel, true);
+    var commands = [];
+    commands.push("FORCECH "+channel);
+    return sendCommands(commands, true);
 }
 
 function determinePrefix(command) {
+    console.log("Determining prefix of command: " +command);
     if(TELEPORT_COMMANDS.indexOf(command) != -1)
-        return "TELEPORT";
+	{console.log("teleport command");
+        return "TELEPORT";}
     else if(IRCODE_COMMANDS.indexOf(command) != -1)
-        return "IRCODE";
+	{console.log("ircode command");
+        return "IRCODE";}
     else if(KEYBOARD_COMMANDS.indexOf(command) != -1)
-        return "KEYBOARD";
+	{console.log("keyboard command");
+        return "KEYBOARD";}
+    else if ((command.substring(0,5) == "SETCH") || (command.substring(0,7) == "FORCECH"))
+	{console.log("channel command");
+	return "";}
     else
-        return false;
+	{console.log("no prefix found!");
+        return false;}
 }
 
+function addInitCommands(commands) {
+    commands.push("GUIDE");
+    commands.push("TIVO");
+    return commands;
+}
+function openMediaCommands(commands) {
+    commands.push("DOWN");
+    commands.push("DOWN");
+    if(tivoMini)
+        commands.push("DOWN");
+    commands.push("RIGHT");
+    return commands;
+}
+function openMusicCommands(commands) {
+    commands.push("DOWN");
+    commands.push("DOWN");
+    commands.push("DOWN");
+    commands.push("DOWN");
+    if(tivoMini)
+        commands.push("DOWN");
+    commands.push("RIGHT");
+    return commands;
+}
 
-express_app.listen(port);
+module.exports = app;

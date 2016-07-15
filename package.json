@@ -1,25 +1,22 @@
 {
   "name": "alexa_tivo_control",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Alexa Skill providing Tivo Remote Control for one Tivo",
   "main": "app.js",
   "private": true,
   "dependencies": {
     "alexa-app": "^2.3.2",
-    "express": "^4.13.4",
-    "body-parser": "^1.15.0",
     "ejs": "^2.4.1",
     "telnet-client": "^0.9.1"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/grgisme/alexa_tivo_control.git"
+    "url": "git://github.com/jradwan/alexa_tivo_control.git"
   },
-  "author": "Garrett Griffin",
+  "author": "Jeremy C. Radwan",
   "license": "MIT"
 }

@@ -1,21 +1,21 @@
 # alexa_tivo_control
-## WORK IN PROGRESS, NOT READY TO USE
-## WORK IN PROGRESS, NOT READY TO USE
-## WORK IN PROGRESS, NOT READY TO USE
-Alexa Skill providing network remote control for Tivo devices.
+Alexa Skill providing network remote control for a single Tivo device.
+
+Forked from https://github.com/grgisme/alexa_tivo_control
 
 Tivo Network Remote Documentation:
 `http://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf`
 
 ## Requirements
 * Node
+* Alexa-App-Server
 * Alexa-App
 
 ## Installation Instructions
 
 Clone the repo:
 ```bash
-git clone git@github.com:grgisme/alexa_tivo_control.git
+git clone git@github.com:jradwan/alexa_tivo_control.git
 ```
 Install Dependencies:
 ```bash
@@ -32,7 +32,7 @@ You must also enable the network remote control on your Tivo.
 
 ## Contact
 
-Garrett Griffin-Morales
+Jeremy C. Radwan
 
-- https://github.com/grgisme
-- http://twitter.com/grgisme
+- https://github.com/jradwan
+- http://www.windracer.net/blog
