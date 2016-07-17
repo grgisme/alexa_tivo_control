@@ -36,4 +36,4 @@ Jeremy C. Radwan
 This project was forked from https://github.com/grgisme/alexa_tivo_control
 
 Tivo Network Remote Documentation:
-`http://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf`
+http://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf
