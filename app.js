@@ -6,11 +6,11 @@ var net = require('net');
 module.change_code = 1;
 
 // load configuration parameters (or set defaults)
-var config   = require("./config.json");
+var config = require("./config.json");
 var tivoMini = config.tivoMini || false;
 var route = config.route || "tivo_control";
 
-// read  active services (or set defaults)
+// read active video providers (or set defaults)
 var svc_hbogo = config.hbogo || false;
 var svc_amazon = config.amazon || false;
 var svc_netflix = config.netflix || false;
@@ -25,10 +25,16 @@ var svc_flixfling = config.flixfling || false;
 var svc_toongoggles = config.toongoggles || false;
 var svc_wwe = config.wwe || false;
 var svc_yahoo = config.yahoo || false;
-var svc_yupptv= config.yupptv || false;
-var svc_pandora = true;
-var svc_spotify = true;
-var svc_iheartradio = true;
+var svc_yupptv = config.yupptv || false;
+var video_provider_order = ["hbogo", "amazon", "netflix", "hulu", "youtube", "mlbtv", "plex", "vudu", "hsn", "aol", "flixfling", "toongogggles", "wwe", "yahoo", "yupptv"];
+var video_provider_status = [svc_hbogo, svc_amazon, svc_netflix, svc_hulu, svc_youtube, svc_mlbtv, svc_plex, svc_vudu, svc_hsn, svc_aol, svc_flixfling, svc_toongoggles, svc_wwe, svc_yahoo, svc_yupptv];
+
+// set active audio providers
+var svc_pandora = config.pandora || true;
+var svc_spotify = config.spotify || false;
+var svc_iheartradio = config.iheartradio || true;
+var audio_provider_order = ["pandora", "spotify", "iheartradio"];
+var audio_provider_status = [svc_pandora, svc_spotify, svc_iheartradio];
 
 // define variables
 var queuedCommands = [];
@@ -75,6 +81,28 @@ app.intent('SendCommand',
         var commands = [];
         commands.push(request.slot("TIVOCOMMAND").toUpperCase());
         sendCommands(commands);
+    });
+
+app.intent('ChangeChannel',
+    {
+        "slots":{"TIVOCHANNEL":"NUMBER"},
+        "utterances":[ "{change|go to} channel {1-100|TIVOCHANNEL}" ]
+    },
+    function(request,response) {
+	var commands = [];
+	commands.push("SETCH "+request.slot("TIVOCHANNEL"));
+	return sendCommands(commands, true);
+    });
+
+app.intent('ForceChannel',
+    {
+        "slots":{"TIVOCHANNEL":"NUMBER"},
+        "utterances":[ "force channel {1-100|TIVOCHANNEL}" ]
+    },
+    function(request,response) {
+	var commands = [];
+	commands.push("FORCECH "+request.slot("TIVOCHANNEL"));
+	return sendCommands(commands, true);
     });
 
 app.intent('Pause',
@@ -245,13 +273,7 @@ app.intent('Netflix',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
-
+        commands = buildProviderNavigation("netflix", commands);
         sendCommands(commands);
     });
 
@@ -264,11 +286,7 @@ app.intent('Amazon',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("amazon", commands);
         sendCommands(commands);
     });
 
@@ -281,13 +299,7 @@ app.intent('Hulu',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("hulu", commands);
         sendCommands(commands);
     });
 
@@ -300,14 +312,7 @@ app.intent('YouTube',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("youtube", commands);
         sendCommands(commands);
     });
 
@@ -320,15 +325,7 @@ app.intent('MLBTV',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("mlbtv", commands);
         sendCommands(commands);
     });
 
@@ -341,16 +338,7 @@ app.intent('Plex',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("plex", commands);
         sendCommands(commands);
     });
 
@@ -363,10 +351,7 @@ app.intent('HBOGo',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMediaCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("hbogo", commands);
         sendCommands(commands);
     });
 
@@ -379,8 +364,7 @@ app.intent('Pandora',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMusicCommands(commands);
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("pandora", commands);
         sendCommands(commands);
     });
 
@@ -393,9 +377,7 @@ app.intent('Spotify',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMusicCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("spotify", commands);
         sendCommands(commands);
     });
 
@@ -408,33 +390,8 @@ app.intent('iHeartRadio',
         var commands = [];
         commands = addInitCommands(commands);
         commands = openMusicCommands(commands);
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("DOWN");
-        commands.push("RIGHT");
+        commands = buildProviderNavigation("iheartradio", commands);
         sendCommands(commands);
-    });
-
-app.intent('ChangeChannel',
-    {
-        "slots":{"TIVOCHANNEL":"NUMBER"},
-        "utterances":[ "{change|go to} channel {1-100|TIVOCHANNEL}" ]
-    },
-    function(request,response) {
-	var commands = [];
-	commands.push("SETCH "+request.slot("TIVOCHANNEL"));
-	return sendCommands(commands, true);
-    });
-
-app.intent('ForceChannel',
-    {
-        "slots":{"TIVOCHANNEL":"NUMBER"},
-        "utterances":[ "force channel {1-100|TIVOCHANNEL}" ]
-    },
-    function(request,response) {
-	var commands = [];
-	commands.push("FORCECH "+request.slot("TIVOCHANNEL"));
-	return sendCommands(commands, true);
     });
 
 
@@ -548,13 +505,27 @@ function determinePrefix(command) {
 
 // reset to known location (i.e., TiVo Central)
 function addInitCommands(commands) {
-    commands.push("GUIDE");
+    //commands.push("GUIDE"); // not sure if this is necessary?
     commands.push("TIVO");
     return commands;
 }
 
-// go to <menu name>
+// go to Find TV, Movies, & Videos menu
 function openMediaCommands(commands) {
+    commands.push("DOWN");
+    commands.push("DOWN");
+    if(tivoMini)
+        commands.push("DOWN");
+    commands.push("RIGHT");
+    commands.push("DOWN");
+    commands.push("DOWN");
+    return commands;
+}
+
+// go to Music & Photos menu
+function openMusicCommands(commands) {
+    commands.push("DOWN");
+    commands.push("DOWN");
     commands.push("DOWN");
     commands.push("DOWN");
     if(tivoMini)
@@ -563,14 +534,28 @@ function openMediaCommands(commands) {
     return commands;
 }
 
-// go to <menu name>
-function openMusicCommands(commands) {
-    commands.push("DOWN");
-    commands.push("DOWN");
-    commands.push("DOWN");
-    commands.push("DOWN");
-    if(tivoMini)
-        commands.push("DOWN");
+// build dynamic navigation based on which video/audio providers are enabled
+function buildProviderNavigation(provider, commands) {
+
+    var provider_loc = video_provider_order.indexOf(provider);
+
+    if (provider_loc == -1) {
+        console.log("building navigation for audio provider");
+        provider_loc = audio_provider_order.indexOf(provider);
+        provider_order = audio_provider_order;
+        provider_status = audio_provider_status;
+    }
+    else {
+        console.log("building navigation for video provider");
+        provider_order = video_provider_order;
+        provider_status = video_provider_status; 
+    }
+
+    for (loc = 0; loc <= provider_loc; loc++) {
+        console.log(provider_order[loc] + " (" + provider_status[loc] + ")");
+        if (provider_status[loc] == true) {
+            commands.push("DOWN");}
+    }
     commands.push("RIGHT");
     return commands;
 }
