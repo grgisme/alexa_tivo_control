@@ -3,6 +3,21 @@
   "tivoPort": 31339,
   "alexaAppId": "",
   "route": "tivo_control",
-  "port": 4568,
-  "tivoMini": false
+  "tivoMini": false,
+
+  "hbogo": false,
+  "amazon": false,
+  "netflix": false,
+  "hulu": false,
+  "youtube": false,
+  "mlbtv": false,
+  "plex": false,
+  "vudu": false,
+  "hsn": false,
+  "aol": false,
+  "flixfling": false,
+  "toongoggles": false,
+  "wwe": false,
+  "yahoo": false,
+  "yupptv": false
 }

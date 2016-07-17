@@ -2,13 +2,33 @@
 var alexa = require('alexa-app');
 var net = require('net');
 
-// Allow this module to be reloaded by hotswap when changed
+// allow this module to be reloaded by hotswap when changed
 module.change_code = 1;
 
 // load configuration parameters (or set defaults)
 var config   = require("./config.json");
-var tivoMini = config.tivoMini;
+var tivoMini = config.tivoMini || false;
 var route = config.route || "tivo_control";
+
+// read  active services (or set defaults)
+var svc_hbogo = config.hbogo || false;
+var svc_amazon = config.amazon || false;
+var svc_netflix = config.netflix || false;
+var svc_hulu = config.hulu || false;
+var svc_youtube = config.youtube || false;
+var svc_mlbtv = config.mlbtv || false;
+var svc_plex = config.plex || false;
+var svc_vudu = config.vudu || false;
+var svc_hsn = config.hsn || false;
+var svc_aol = config.aol || false;
+var svc_flixfling = config.flixfling || false;
+var svc_toongoggles = config.toongoggles || false;
+var svc_wwe = config.wwe || false;
+var svc_yahoo = config.yahoo || false;
+var svc_yupptv= config.yupptv || false;
+var svc_pandora = true;
+var svc_spotify = true;
+var svc_iheartradio = true;
 
 // define variables
 var queuedCommands = [];
@@ -17,7 +37,7 @@ var socketOpen = false;
 var interval;
 var noResponse = true;
 
-// Define an alexa-app
+// define an alexa-app
 var app = new alexa.app(route);
 
 
@@ -193,12 +213,23 @@ app.intent('GoHome',
         sendCommands(commands);
     });
 
+app.intent('ToDoList',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show} {to do|to do list}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM2");
+        sendCommands(commands);
+    });
+
 app.intent('MyShows',
     {
         "slots":{},
         "utterances":[ "{go to|open|open up|display|launch|show} {now playing|my shows|my recordings}" ]
     },
-    // TEST: doesn't always work, conflicts with record commands?
     function(request,response) {
         var commands = [];
         commands.push("NOWPLAYING");
@@ -280,7 +311,7 @@ app.intent('YouTube',
         sendCommands(commands);
     });
 
-app.intent('MBLTV',
+app.intent('MLBTV',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {the|} {mlb|baseball|mlb tv|major league baseball|major league baseball tv}" ]
@@ -494,7 +525,7 @@ function sendCommands(commands) {
         if(noResponse) {
             telnetSocket.write("TELEPORT GUIDE" + "\r");
             if(tivoMini) {
-                //Tivo Mini's don't respond with a Channel response on the primary menu or guide, so we'll set another timeout.
+                //Tivo Minis don't respond with a Channel response on the primary menu or guide, so we'll set another timeout.
                 setTimeout(sendNextCommand, 2500);
             }
         }
@@ -503,23 +534,16 @@ function sendCommands(commands) {
 
 // determine prefix for a command
 function determinePrefix(command) {
-    console.log("Determining prefix of command: " +command);
     if(TELEPORT_COMMANDS.indexOf(command) != -1)
-	{console.log("teleport command");
-        return "TELEPORT";}
+        return "TELEPORT";
     else if(IRCODE_COMMANDS.indexOf(command) != -1)
-	{console.log("ircode command");
-        return "IRCODE";}
+        return "IRCODE";
     else if(KEYBOARD_COMMANDS.indexOf(command) != -1)
-	{console.log("keyboard command");
-        return "KEYBOARD";}
+        return "KEYBOARD";
     else if ((command.substring(0,5) == "SETCH") || (command.substring(0,7) == "FORCECH"))
-	// this won't be necessary if I can get the explicit commands working again
-	{console.log("channel command");
-	return "";}
+	return "";
     else
-	{console.log("no prefix found!");
-        return false;}
+        return false;
 }
 
 // reset to known location (i.e., TiVo Central)
