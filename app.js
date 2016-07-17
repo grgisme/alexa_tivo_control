@@ -42,6 +42,9 @@ var telnetSocket;
 var socketOpen = false;
 var interval;
 var noResponse = true;
+var launchResponse = "Welcome to Tivo Control. You can say things like Alexa, tell TiVo to pause, or Alexa, launch Plex.";
+var helpResponse = ", Check the card in your Alexa app for more help and detailed examples.";
+var helpText = "Welcome to TiVo Control. You can use this skill to control your TiVo with your Amazon Echo and Alexa voice control.\n\nAll of the voice commands start with 'Alexa, tell TiVo ...':\n\nCONTROL\n\n... change/go to channel <channel number>\n... force channel <channel number>\n... pause\n... play\n... fast forward\n... replay\n... skip/advance ahead\n... skip the commercials (for Skip-enabled recordings)\n... record this show\n\nFEATURES\n\n... turn on/off captions... turn on/off/toggle QuickMode\nPLACES\n... go to Live TV\n... go Home/TiVo Central\n... go to/show My Shows/Now Playing... go to/show To Do List\n\nPROVIDERS\n\n... launch Netflix... launch Amazon\nADVANCED\n\n... send the command <command>\n\nOTHER\n... for Help: add this card to your Alexa app\n\n";
 
 // define an alexa-app
 var app = new alexa.app(route);
@@ -50,7 +53,7 @@ var app = new alexa.app(route);
 // launch --------------------------------------------------------------
 
 app.launch(function(request,response) {
-    response.say("Welcome to Tivo Control");
+    response.say(launchResponse);
 });
 
 if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
@@ -71,6 +74,16 @@ app.dictionary = {"commands":["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "
 
 
 // intents -------------------------------------------------------------
+
+app.intent('Help',
+    {
+        "slots":{},
+        "utterances":[ "{for|} {help|assistance}" ]
+    },
+    function(request,response) {
+        response.say(launchResponse + helpResponse);
+        response.card("TiVo Control Help", helpText);
+    });
 
 app.intent('SendCommand',
     {
@@ -552,7 +565,7 @@ function buildProviderNavigation(provider, commands) {
     }
 
     for (loc = 0; loc <= provider_loc; loc++) {
-        console.log(provider_order[loc] + " (" + provider_status[loc] + ")");
+        console.log("- " + provider_order[loc] + " (" + provider_status[loc] + ")");
         if (provider_status[loc] == true) {
             commands.push("DOWN");}
     }
