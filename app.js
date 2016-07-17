@@ -113,19 +113,26 @@ app.intent('Replay',
         sendCommands(commands);
     });
 
-app.intent('Captions',
+app.intent('CaptionsOn',
     {
         "slots":{},
-        "utterances":[ "{turn on|turn off|enable|disable|toggle} {closed captions|captions}" ]
+        "utterances":[ "{turn on|enable} {closed captions|captions}" ]
     },
     function(request,response) {
         var commands = [];
-        commands.push("INFO");
-        commands.push("DOWN");
-        if(!tivoMini) 
-            commands.push("DOWN");
-        commands.push("SELECT");
-        commands.push("CLEAR");
+        commands.push("CC_ON");
+        sendCommands(commands);
+    });
+
+app.intent('CaptionsOff',
+    {
+
+        "slots":{},
+        "utterances":[ "{turn off|disable} {closed captions|captions}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("CC_OFF");
         sendCommands(commands);
     });
 
