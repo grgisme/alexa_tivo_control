@@ -95,25 +95,25 @@ Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
 
    You can test the other intents (such as launching the video/audio providers) on this page to confirm your configuration settings.
    
-7. In order to link TiVo Control to your Amazon Echo, you'll need an [Amazon Developer](https://developer.amazon.com/home.html) account and your Alexa-App-Server must be available over the public internet via SSL (https). In the Alexa Skills Kit area of the developer console, click "Add a New Skill." Name your skill (ex. TiVo Control) and set an invocation name (ex. tivo).
+7. In order to link TiVo Control to your Amazon Echo, you'll need an [Amazon Developer](https://developer.amazon.com/home.html) account and your Alexa-App-Server must be available over the public internet via SSL (HTTPS). In the Alexa Skills Kit area of the developer console, click "Add a New Skill." Name your skill (ex. TiVo Control) and set an invocation name (ex. tivo).
 
    ![ScreenShot](docs/alexa-skill01.png)   
    
-8. On the Interaction Model page, copy in the "Intent Schema" and "Sample Utterances" text from the Alexa Tester page. 
+8. On the Interaction Model page, copy in the "Intent Schema" and "Sample Utterances" text from the Alexa Tester page (see step 6).
 
    ![ScreenShot](docs/alexa-skill02.png)   
 
-9. On the Configuration page, select HTTPS for the "Endpoint" and fill in the URL of your Alexa-App-Server and TiVo Control endpoint. Remember the URL must be accessible via HTTPS over the public internet (setting up this configuration it outside the scope of this document).
+9. On the Configuration page, select HTTPS for the "Endpoint" and fill in the URL of your Alexa-App-Server and TiVo Control endpoint. Remember the URL must be accessible via HTTPS over the public internet (setting up that configuration is outside the scope of this document).
 
    ![ScreenShot](docs/alexa-skill03.png)   
 
-10. Save the skill. Copy the "Application Id" from the "Skill Information Page" into the alexaAppId attribute in the config.json file and restart your Alexa-App-Server.
+10. Save the skill. Copy the "Application Id" from the "Skill Information Page" into the alexaAppId attribute in the config.json file (from step 3 above) and restart your Alexa-App-Server.
 
-11. On the Test page you should be able to enter a sample utterance (ex. pause) and click "Ask TiVo Control." If your setup is correct, a response should be received.
+11. On the Test page, enter a sample utterance (ex. pause) and click "Ask TiVo Control." If your setup is correct, the Alexa skill on the Amazon servers will send a JSON request to your endpoint and a response should be received.
 
    ![ScreenShot](docs/alexa-skill04.png)   
    
-12. The skill should now be active on your Echo account (as a development skill in test mode). You can confirm this by looking at the "Your Skills" page on your Alexa web page or app. Test by asking Alexa to control your TiVo and watch the magic happen!
+12. The skill should now be active on your Echo account (as a development skill in test mode). You can confirm this by looking at the "Your Skills" page on your Alexa web page or app. Test it out by asking Alexa to control your TiVo and watch the magic happen!
    ```
    Alexa, tell TiVo to pause
    Alexa, tell TiVo to replay
