@@ -78,6 +78,8 @@ Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
 5. Enable the network remote control on your TiVo (under Settings & Messages > Remote, CableCARD, & Devices > Network Remote Control.
 
 6. In a browser, open the TiVo Control endpoint on your Alexa-App-Server (i.e., http://localhost:8085/tivo_control) and you should see the Alexa Tester page. Here you can set the "Type" field to "IntentRequest", choose an "Intent" (i.e., action) from the dropdown menu, and click "Send Request" to trigger the intent.
+
+   ![ScreenShot](docs/alexa-tester.png)
    
    For example: select "Pause" from the dropdown and click "Send Request." If your configuration is correct and working, your TiVo should pause. Select "Play" then "Send Request" and playback should resume. The console log will show debugging information:
 
