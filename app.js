@@ -5,36 +5,28 @@ var net = require('net');
 // allow this module to be reloaded by hotswap when changed
 module.change_code = 1;
 
-// load configuration parameters (or set defaults)
+// load configuration parameters
 var config = require("./config.json");
+var strings = require("./constants.json");
+
+// load settings from config file
 var tivoMini = config.tivoMini || false;
 var route = config.route || "tivo_control";
 
-// read active video providers (or set defaults)
-var svc_hbogo = config.hbogo || false;
-var svc_amazon = config.amazon || false;
-var svc_netflix = config.netflix || false;
-var svc_hulu = config.hulu || false;
-var svc_youtube = config.youtube || false;
-var svc_mlbtv = config.mlbtv || false;
-var svc_plex = config.plex || false;
-var svc_vudu = config.vudu || false;
-var svc_hsn = config.hsn || false;
-var svc_aol = config.aol || false;
-var svc_flixfling = config.flixfling || false;
-var svc_toongoggles = config.toongoggles || false;
-var svc_wwe = config.wwe || false;
-var svc_yahoo = config.yahoo || false;
-var svc_yupptv = config.yupptv || false;
-var video_provider_order = ["hbogo", "amazon", "netflix", "hulu", "youtube", "mlbtv", "plex", "vudu", "hsn", "aol", "flixfling", "toongogggles", "wwe", "yahoo", "yupptv"];
-var video_provider_status = [svc_hbogo, svc_amazon, svc_netflix, svc_hulu, svc_youtube, svc_mlbtv, svc_plex, svc_vudu, svc_hsn, svc_aol, svc_flixfling, svc_toongoggles, svc_wwe, svc_yahoo, svc_yupptv];
+// read video providers and their status
+var video_provider_order = [strings.hbogo, strings.amazon, strings.netflix, strings.hulu, strings.youtube, strings.mlbtv, strings.plex, strings.vudu, strings.hsn, strings.aol, strings.flixfling, strings.toongoggles, strings.wwe, strings.yahoo, strings.yupptv];
+var video_provider_status = [config.hbogo, config.amazon, config.netflix, config.hulu, config.youtube, config.mlbtv, config.plex, config.vudu, config.hsn, config.aol, config.flixfling, config.toongoggles, config.wwe, config.yahoo, config.yupptv];
 
-// set active audio providers
-var svc_pandora = config.pandora || true;
-var svc_spotify = config.spotify || false;
-var svc_iheartradio = config.iheartradio || true;
-var audio_provider_order = ["pandora", "spotify", "iheartradio"];
-var audio_provider_status = [svc_pandora, svc_spotify, svc_iheartradio];
+// set audio providers and their status
+var audio_provider_order = [strings.pandora, strings.spotify, strings.iheartradio];
+var audio_provider_status = [config.pandora, config.spotify, config.iheartradio];
+
+// set strings from constants file (used for Alexa to speak, mainly)
+var launchWelcome = strings.txt_welcome;
+var launchHelp = strings.txt_launch;
+var helpResponse = strings.txt_card;
+var helpText = strings.txt_help;
+var notEnabledResponse = strings.txt_notenabled;
 
 // define variables
 var queuedCommands = [];
@@ -42,9 +34,7 @@ var telnetSocket;
 var socketOpen = false;
 var interval;
 var noResponse = true;
-var launchResponse = "Welcome to Tivo Control. You can say things like Alexa, tell TiVo to pause, or Alexa, launch Plex.";
-var helpResponse = ", Check the card in your Alexa app for more help and detailed examples.";
-var helpText = "Welcome to TiVo Control. You can use this skill to control your TiVo with your Amazon Echo and Alexa voice control.\n\nAll of the voice commands start with 'Alexa, tell TiVo ...':\n\nCONTROL\n\n... change/go to channel <channel number>\n... force channel <channel number>\n... pause\n... play\n... fast forward\n... replay\n... skip/advance ahead\n... skip the commercials (for Skip-enabled recordings)\n... record this show\n\nFEATURES\n\n... turn on/off captions... turn on/off/toggle QuickMode\nPLACES\n... go to Live TV\n... go Home/TiVo Central\n... go to/show My Shows/Now Playing... go to/show To Do List\n\nPROVIDERS\n\n... launch Netflix... launch Amazon\nADVANCED\n\n... send the command <command>\n\nOTHER\n... for Help: add this card to your Alexa app\n\n";
+var providerEnabled;
 
 // define an alexa-app
 var app = new alexa.app(route);
@@ -53,7 +43,7 @@ var app = new alexa.app(route);
 // launch --------------------------------------------------------------
 
 app.launch(function(request,response) {
-    response.say(launchResponse);
+    response.say(launchWelcome + launchHelp);
 });
 
 if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
@@ -75,26 +65,67 @@ app.dictionary = {"commands":["UP", "DOWN", "LEFT", "RIGHT", "SELECT", "TIVO", "
 
 // intents -------------------------------------------------------------
 
+// HELP
+
 app.intent('Help',
     {
         "slots":{},
         "utterances":[ "{for|} {help|assistance}" ]
     },
     function(request,response) {
-        response.say(launchResponse + helpResponse);
+        console.log("Help requested, adding card.");
+        response.say(launchHelp + helpResponse);
         response.card("TiVo Control Help", helpText);
     });
 
-app.intent('SendCommand',
+// PLACES
+
+app.intent('GoHome',
     {
-        "slots":{"TIVOCOMMAND":"LITERAL"},
-        "utterances":[ "send {the|} {command|} {commands|TIVOCOMMAND}" ]
+        "slots":{},
+        "utterances":[ "{show|go} {to|to the|} {home|tivo central} {screen|}" ]
     },
     function(request,response) {
         var commands = [];
-        commands.push(request.slot("TIVOCOMMAND").toUpperCase());
+        commands.push("TIVO");
         sendCommands(commands);
     });
+
+app.intent('LiveTV',
+    {
+        "slots":{},
+        "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("LIVETV");
+        sendCommands(commands);
+    });
+
+app.intent('ToDoList',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show} {to do|to do list}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM2");
+        sendCommands(commands);
+    });
+
+app.intent('MyShows',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show} {now playing|my shows|my recordings}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("NOWPLAYING");
+        sendCommands(commands);
+    });
+
+// CONTROL
 
 app.intent('ChangeChannel',
     {
@@ -129,17 +160,6 @@ app.intent('Pause',
         sendCommands(commands);
     });
 
-app.intent('LiveTV',
-    {
-        "slots":{},
-        "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
-    },
-    function(request,response) {
-        var commands = [];
-        commands.push("LIVETV");
-        sendCommands(commands);
-    });
-
 app.intent('Play',
     {
         "slots":{},
@@ -162,6 +182,28 @@ app.intent('FastForward',
         sendCommands(commands);
     });
 
+	app.intent('SkipAhead',
+    {
+        "slots":{},
+        "utterances":[ "{skip|advance} {forward|ahead}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("ADVANCE");
+        sendCommands(commands);
+    });
+
+app.intent('SkipCommerial',
+    {
+        "slots":{},
+        "utterances":[ "skip {the|} {this|} {commercial|commercials}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("ACTION_D");
+        sendCommands(commands);
+    });
+
 app.intent('Replay',
     {
         "slots":{},
@@ -173,6 +215,19 @@ app.intent('Replay',
         commands.push("REPLAY");
         sendCommands(commands);
     });
+
+app.intent('Record',
+    {
+        "slots":{},
+        "utterances":[ "record {this|the|} {show|current show|this}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("RECORD");
+        sendCommands(commands);
+    });
+
+// FEATURES
 
 app.intent('CaptionsOn',
     {
@@ -210,84 +265,37 @@ app.intent('QuickMode',
         sendCommands(commands);
     });
 
-app.intent('SkipAhead',
+// ADVANCED
+
+app.intent('SendCommand',
     {
-        "slots":{},
-        "utterances":[ "{skip|advance} {forward|ahead}" ]
+        "slots":{"TIVOCOMMAND":"LITERAL"},
+        "utterances":[ "send {the|} {command|} {commands|TIVOCOMMAND}" ]
     },
     function(request,response) {
         var commands = [];
-        commands.push("ADVANCE");
+        commands.push(request.slot("TIVOCOMMAND").toUpperCase());
         sendCommands(commands);
     });
 
-app.intent('SkipCommerial',
-    {
-        "slots":{},
-        "utterances":[ "skip {the|} {this|} {commercial|commercials}" ]
-    },
-    function(request,response) {
-        var commands = [];
-        commands.push("ACTION_D");
-        sendCommands(commands);
-    });
+// VIDEO PROVIDERS
 
-app.intent('Record',
+app.intent('HBOGo',
     {
         "slots":{},
-        "utterances":[ "record {this|the|} {show|current show|this}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hbo {go|}" ]
     },
     function(request,response) {
-        var commands = [];
-        commands.push("RECORD");
-        sendCommands(commands);
-    });
-
-app.intent('GoHome',
-    {
-        "slots":{},
-        "utterances":[ "{show|go} {to|to the|} {home|tivo central} {screen|}" ]
-    },
-    function(request,response) {
-        var commands = [];
-        commands.push("TIVO");
-        sendCommands(commands);
-    });
-
-app.intent('ToDoList',
-    {
-        "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {to do|to do list}" ]
-    },
-    function(request,response) {
-        var commands = [];
-        commands.push("TIVO");
-        commands.push("NUM2");
-        sendCommands(commands);
-    });
-
-app.intent('MyShows',
-    {
-        "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {now playing|my shows|my recordings}" ]
-    },
-    function(request,response) {
-        var commands = [];
-        commands.push("NOWPLAYING");
-        sendCommands(commands);
-    });
-
-app.intent('Netflix',
-    {
-        "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} netflix" ]
-    },
-    function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("netflix", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.hbogo)) {
+            response.say("Launching " + strings.hbogo);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.hbogo, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.hbogo + notEnabledResponse);
     });
 
 app.intent('Amazon',
@@ -296,77 +304,253 @@ app.intent('Amazon',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} amazon {video|}" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("amazon", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.amazon)) {
+            response.say("Launching " + strings.amazon);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.amazon, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.amazon + notEnabledResponse);
     });
 
+app.intent('Netflix',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} netflix" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.netflix)) {
+            response.say("Launching " + strings.netflix);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.netflix, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.netflix + notEnabledResponse);
+    });
+	
 app.intent('Hulu',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hulu" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("hulu", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.hulu)) {
+            response.say("Launching " + strings.hulu);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.hulu, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.hulu + notEnabledResponse);
     });
-
+	
 app.intent('YouTube',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} youtube" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("youtube", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.youtube)) {
+            response.say("Launching " + strings.youtube);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.yotube, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.youtube + notEnabledResponse);
     });
-
+	
 app.intent('MLBTV',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {the|} {mlb|baseball|mlb tv|major league baseball|major league baseball tv}" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("mlbtv", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.mlbtv)) {
+            response.say("Launching " + strings.mlbtv);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.mlbtv, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.mlbtv + notEnabledResponse);
     });
-
+	
 app.intent('Plex',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} plex" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("plex", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.plex)) {
+            response.say("Launching " + strings.plex);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.plex, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.plex + notEnabledResponse);
     });
-
-app.intent('HBOGo',
+	
+app.intent('VUDU',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} hbo {go|}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {vudu|voodoo}" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMediaCommands(commands);
-        commands = buildProviderNavigation("hbogo", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.vudu)) {
+            response.say("Launching " + strings.vudu);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.vudu, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.vudu + notEnabledResponse);
     });
+	
+app.intent('HSN',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {hsn|home shopping network|shopping}" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.hsn)) {
+            response.say("Launching " + strings.hsn);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.hsn, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.hsn + notEnabledResponse);
+    });
+	
+app.intent('AOL',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {aol|aol on|america online}" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.aol)) {
+            response.say("Launching " + strings.aol);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.aol, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.aol + notEnabledResponse);
+    });
+	
+app.intent('FlixFling',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} flixfling" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.flixfling)) {
+            response.say("Launching " + strings.flixfling);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.flixfling, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.flixfling + notEnabledResponse);
+    });
+	
+app.intent('ToonGoggles',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} toon goggles" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.toongoggles)) {
+            response.say("Launching " + strings.toongoggles);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.toongoggles, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.toongoggles + notEnabledResponse);
+    });
+	
+app.intent('WWE',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {wwe|wrestling|word wrestling entertainment}" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.wwe)) {
+            response.say("Launching " + strings.wwe);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.wwe, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.wwe + notEnabledResponse);
+    });
+	
+app.intent('Yahoo',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} yahoo" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.yahoo)) {
+            response.say("Launching " + strings.yahoo);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.yahoo, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.yahoo + notEnabledResponse);
+    });
+	
+app.intent('YuppTV',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {yupp tv|yupptv}" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.yupptv)) {
+            response.say("Launching " + strings.yupptv);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMediaCommands(commands);
+            commands = buildProviderNavigation(strings.yupptv, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.yupptv + notEnabledResponse);
+    });
+	
+// AUDIO PROVIDERS
 
 app.intent('Pandora',
     {
@@ -374,37 +558,52 @@ app.intent('Pandora',
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} pandora", "play {music|music on pandora|pandora}" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMusicCommands(commands);
-        commands = buildProviderNavigation("pandora", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.pandora)) {
+            response.say("Launching " + strings.pandora);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMusicCommands(commands);
+            commands = buildProviderNavigation(strings.pandora, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.pandora + notEnabledResponse);
     });
-
+	
 app.intent('Spotify',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} spotify", "play {music|music on|} spotify" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMusicCommands(commands);
-        commands = buildProviderNavigation("spotify", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.spotify)) {
+            response.say("Launching " + strings.spotify);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMusicCommands(commands);
+            commands = buildProviderNavigation(strings.spotify, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.spotify + notEnabledResponse);
     });
-
+	
 app.intent('iHeartRadio',
     {
         "slots":{},
         "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} iheartradio", "play {music|music on|} iheartradio" ]
     },
     function(request,response) {
-        var commands = [];
-        commands = addInitCommands(commands);
-        commands = openMusicCommands(commands);
-        commands = buildProviderNavigation("iheartradio", commands);
-        sendCommands(commands);
+        if (checkProviderEnabled(strings.iheartradio)) {
+            response.say("Launching " + strings.iheartradio);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMusicCommands(commands);
+            commands = buildProviderNavigation(strings.iheartradio, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.iheartradio + notEnabledResponse);
     });
 
 
@@ -553,13 +752,13 @@ function buildProviderNavigation(provider, commands) {
     var provider_loc = video_provider_order.indexOf(provider);
 
     if (provider_loc == -1) {
-        console.log("building navigation for audio provider");
+        console.log("building navigation for audio provider (" + provider + ")");
         provider_loc = audio_provider_order.indexOf(provider);
         provider_order = audio_provider_order;
         provider_status = audio_provider_status;
     }
     else {
-        console.log("building navigation for video provider");
+        console.log("building navigation for video provider (" + provider + ")");
         provider_order = video_provider_order;
         provider_status = video_provider_status; 
     }
@@ -571,6 +770,28 @@ function buildProviderNavigation(provider, commands) {
     }
     commands.push("RIGHT");
     return commands;
+}
+
+function checkProviderEnabled(provider) {
+
+    var provider_loc = video_provider_order.indexOf(provider);
+
+    if (provider_loc == -1) {
+        console.log("checking status of audio provider (" + provider + ")");
+        provider_loc = audio_provider_order.indexOf(provider);
+        provider_status = audio_provider_status;
+    }
+    else {
+        console.log("checking status of video provider (" + provider + ")");
+        provider_status = video_provider_status; 
+    }
+
+    if (provider_status[provider_loc] == true)
+        console.log("- enabled");
+    else
+        console.log("- disabled");
+
+    return provider_status[provider_loc];
 }
 
 module.exports = app;
