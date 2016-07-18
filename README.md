@@ -10,15 +10,17 @@ Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
 ## Installation Instructions
 
 1. Clone this repository into your Alexa-App-Server apps directory:
-   ```bash
+   ```
    git clone https://github.com/jradwan/alexa_tivo_control.git
    ```
+
 2. Install any missing dependencies (telnet-client, etc.):
-   ```bash
+   ```
    npm install
    ```
+
 3. Copy config_example.json to config.json:
-   ```bash
+   ```
    cp config_example.json config.json
    ```
 
@@ -55,7 +57,7 @@ Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
    These settings are used to dynamically generate remote key-presses for menu navigation so incorrect settings could cause unexpected navigation.
 
 4. Start the Alexa-App-Server:
-   ```bash
+   ```
    node server.js
    ```
 
