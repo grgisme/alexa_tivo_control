@@ -1,3 +1,11 @@
+---- REMOVE BETWEEN THESE LINES ----
+This file contains the text for the TiVo Control help card.
+
+Make changes/edits here, where it's easier to read and see formatting. 
+Then, replace all CR/LF with \n and put the resulting string into the
+txt_help attribute in the constants.json file.
+---- REMOVE BETWEEN THESE LINES ----
+
 Welcome to TiVo Control. You can use this skill to control your TiVo with your Amazon Echo and Alexa voice control.
 
 All of the voice commands start with 'Alexa, tell/ask TiVo to ...':
