@@ -27,7 +27,8 @@ Edit the config.json file and make the following changes:
 * tivoMini: 'true' if controlling a TiVo Mini
 
 If you've hidden unused Video Providers on your TiVo (under Settings & Messages > Settings > Channels > My Video Providers), set the corresponding entries in the config.json file to 'false'. For example: 
-```  "hbogo": false,
+```
+   "hbogo": false,
   "amazon": true,
   "netflix": false,
   "hulu": false,
@@ -45,7 +46,8 @@ If you've hidden unused Video Providers on your TiVo (under Settings & Messages 
 ```
 
 Audio providers are normally not customizable on the TiVo so those settings should be left as 'true'. If for some reason a provider does *not* appear on your TiVo, you can set the corresponding entry to 'false'.
-```  "pandora": true,
+```  
+   "pandora": true,
   "spotify": true,
   "iheartradio": true
 ```
@@ -59,7 +61,8 @@ node server.js
 
 You should see the TiVo Control app registered as an endpoint in the console log:
 
-```Serving static content from: public_html
+```
+Serving static content from: public_html
 Loading server-side modules from: server
    Loaded /opt/alexa-app-server/server/login.js
 Loading apps from: apps
@@ -71,7 +74,8 @@ Listening on HTTP port 8085
 
 6. In a browser, open the TiVo Control endpoint on your Alexa-App-Server (i.e., http://localhost:8085/tivo_control) and you should see the Alexa Tester page. Here you can set the "Type" field to "IntentRequest", choose an "Intent" (i.e., action) from the dropdown menu, and click "Send Request" to trigger the intent. For example, select "Pause" from the dropdown and click "Send Request." If your configuration is correct and working, your TiVo should pause. Select "Play" then "Send Request" and playback should resume. The console log will show debugging information:
 
-```QueuedCommands: PAUSE
+```
+QueuedCommands: PAUSE
 Connection Created
 RECEIVED: CH_STATUS 1287 LOCAL
 Sending Prefixed Command: IRCODE PAUSE
@@ -95,6 +99,3 @@ Jeremy C. Radwan
 [Tivo Network Remote Documentation](http://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf)
 
 This project was forked from https://github.com/grgisme/alexa_tivo_control
-
-
-
