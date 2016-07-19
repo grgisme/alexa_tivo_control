@@ -13,20 +13,13 @@ var strings = require("./constants.json");
 var tivoMini = config.tivoMini || false;
 var route = config.route || "tivo_control";
 
-// read video providers and their status
+// set video providers and their status
 var video_provider_order = [strings.hbogo, strings.amazon, strings.netflix, strings.hulu, strings.youtube, strings.mlbtv, strings.plex, strings.vudu, strings.hsn, strings.aol, strings.flixfling, strings.toongoggles, strings.wwe, strings.yahoo, strings.yupptv];
 var video_provider_status = [config.hbogo, config.amazon, config.netflix, config.hulu, config.youtube, config.mlbtv, config.plex, config.vudu, config.hsn, config.aol, config.flixfling, config.toongoggles, config.wwe, config.yahoo, config.yupptv];
 
 // set audio providers and their status
 var audio_provider_order = [strings.pandora, strings.spotify, strings.iheartradio];
 var audio_provider_status = [config.pandora, config.spotify, config.iheartradio];
-
-// set strings from constants file (used for Alexa to speak, mainly)
-var launchWelcome = strings.txt_welcome;
-var launchHelp = strings.txt_launch;
-var helpResponse = strings.txt_card;
-var helpText = strings.txt_help;
-var notEnabledResponse = strings.txt_notenabled;
 
 // define variables
 var queuedCommands = [];
@@ -43,7 +36,7 @@ var app = new alexa.app(route);
 // launch --------------------------------------------------------------
 
 app.launch(function(request,response) {
-    response.say(launchWelcome + launchHelp);
+    response.say(strings.txt_welcome + strings.txt_launch);
 });
 
 if ((process.argv.length === 3) && (process.argv[2] === 'schema'))  {
@@ -74,8 +67,8 @@ app.intent('Help',
     },
     function(request,response) {
         console.log("Help requested, adding card.");
-        response.say(launchHelp + helpResponse);
-        response.card("TiVo Control Help", helpText);
+        response.say(strings.txt_launch + strings.txt_card);
+        response.card("TiVo Control Help", strings.txt_help);
     });
 
 // PLACES
@@ -105,7 +98,7 @@ app.intent('LiveTV',
 app.intent('ToDoList',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {to do|to do list}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {to do list}" ]
     },
     function(request,response) {
         var commands = [];
@@ -295,7 +288,7 @@ app.intent('HBOGo',
             sendCommands(commands);
         }
         else
-            response.say(strings.hbogo + notEnabledResponse);
+            response.say(strings.hbogo + strings.txt_notenabled);
     });
 
 app.intent('Amazon',
@@ -313,7 +306,7 @@ app.intent('Amazon',
             sendCommands(commands);
         }
         else
-            response.say(strings.amazon + notEnabledResponse);
+            response.say(strings.amazon + strings.txt_notenabled);
     });
 
 app.intent('Netflix',
@@ -331,7 +324,7 @@ app.intent('Netflix',
             sendCommands(commands);
         }
         else
-            response.say(strings.netflix + notEnabledResponse);
+            response.say(strings.netflix + strings.txt_notenabled);
     });
 	
 app.intent('Hulu',
@@ -349,7 +342,7 @@ app.intent('Hulu',
             sendCommands(commands);
         }
         else
-            response.say(strings.hulu + notEnabledResponse);
+            response.say(strings.hulu + strings.txt_notenabled);
     });
 	
 app.intent('YouTube',
@@ -363,11 +356,11 @@ app.intent('YouTube',
             var commands = [];
             commands = addInitCommands(commands);
             commands = openMediaCommands(commands);
-            commands = buildProviderNavigation(strings.yotube, commands);
+            commands = buildProviderNavigation(strings.youtube, commands);
             sendCommands(commands);
         }
         else
-            response.say(strings.youtube + notEnabledResponse);
+            response.say(strings.youtube + strings.txt_notenabled);
     });
 	
 app.intent('MLBTV',
@@ -385,7 +378,7 @@ app.intent('MLBTV',
             sendCommands(commands);
         }
         else
-            response.say(strings.mlbtv + notEnabledResponse);
+            response.say(strings.mlbtv + strings.txt_notenabled);
     });
 	
 app.intent('Plex',
@@ -403,7 +396,7 @@ app.intent('Plex',
             sendCommands(commands);
         }
         else
-            response.say(strings.plex + notEnabledResponse);
+            response.say(strings.plex + strings.txt_notenabled);
     });
 	
 app.intent('VUDU',
@@ -421,7 +414,7 @@ app.intent('VUDU',
             sendCommands(commands);
         }
         else
-            response.say(strings.vudu + notEnabledResponse);
+            response.say(strings.vudu + strings.txt_notenabled);
     });
 	
 app.intent('HSN',
@@ -439,7 +432,7 @@ app.intent('HSN',
             sendCommands(commands);
         }
         else
-            response.say(strings.hsn + notEnabledResponse);
+            response.say(strings.hsn + strings.txt_notenabled);
     });
 	
 app.intent('AOL',
@@ -457,7 +450,7 @@ app.intent('AOL',
             sendCommands(commands);
         }
         else
-            response.say(strings.aol + notEnabledResponse);
+            response.say(strings.aol + strings.txt_notenabled);
     });
 	
 app.intent('FlixFling',
@@ -475,7 +468,7 @@ app.intent('FlixFling',
             sendCommands(commands);
         }
         else
-            response.say(strings.flixfling + notEnabledResponse);
+            response.say(strings.flixfling + strings.txt_notenabled);
     });
 	
 app.intent('ToonGoggles',
@@ -493,13 +486,13 @@ app.intent('ToonGoggles',
             sendCommands(commands);
         }
         else
-            response.say(strings.toongoggles + notEnabledResponse);
+            response.say(strings.toongoggles + strings.txt_notenabled);
     });
 	
 app.intent('WWE',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {wwe|wrestling|word wrestling entertainment}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {wwe|wrestling|world wrestling entertainment}" ]
     },
     function(request,response) {
         if (checkProviderEnabled(strings.wwe)) {
@@ -511,7 +504,7 @@ app.intent('WWE',
             sendCommands(commands);
         }
         else
-            response.say(strings.wwe + notEnabledResponse);
+            response.say(strings.wwe + strings.txt_notenabled);
     });
 	
 app.intent('Yahoo',
@@ -529,13 +522,13 @@ app.intent('Yahoo',
             sendCommands(commands);
         }
         else
-            response.say(strings.yahoo + notEnabledResponse);
+            response.say(strings.yahoo + strings.txt_notenabled);
     });
 	
 app.intent('YuppTV',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {yupp tv|yupptv}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {yupp|yupp tv|yupptv}" ]
     },
     function(request,response) {
         if (checkProviderEnabled(strings.yupptv)) {
@@ -547,7 +540,7 @@ app.intent('YuppTV',
             sendCommands(commands);
         }
         else
-            response.say(strings.yupptv + notEnabledResponse);
+            response.say(strings.yupptv + strings.txt_notenabled);
     });
 	
 // AUDIO PROVIDERS
@@ -567,7 +560,7 @@ app.intent('Pandora',
             sendCommands(commands);
         }
         else
-            response.say(strings.pandora + notEnabledResponse);
+            response.say(strings.pandora + strings.txt_notenabled);
     });
 	
 app.intent('Spotify',
@@ -585,13 +578,13 @@ app.intent('Spotify',
             sendCommands(commands);
         }
         else
-            response.say(strings.spotify + notEnabledResponse);
+            response.say(strings.spotify + strings.txt_notenabled);
     });
 	
 app.intent('iHeartRadio',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} iheartradio", "play {music|music on|} iheartradio" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {iheartradio|i heart radio}", "play {music|music on|} iheartradio" ]
     },
     function(request,response) {
         if (checkProviderEnabled(strings.iheartradio)) {
@@ -603,7 +596,7 @@ app.intent('iHeartRadio',
             sendCommands(commands);
         }
         else
-            response.say(strings.iheartradio + notEnabledResponse);
+            response.say(strings.iheartradio + strings.txt_notenabled);
     });
 
 
