@@ -28,6 +28,8 @@ var socketOpen = false;
 var interval;
 var noResponse = true;
 var providerEnabled;
+var speechList = "";
+var cardList = "";
 
 // define an alexa-app
 var app = new alexa.app(route);
@@ -69,6 +71,18 @@ app.intent('Help',
         console.log("Help requested, adding card.");
         response.say(strings.txt_launch + strings.txt_card);
         response.card("TiVo Control Help", strings.txt_help);
+    });
+
+app.intent('ListEnabledProviders',
+    {
+        "slots":{},
+        "utterances":[ "{for|to} {my providers|list my providers|provider|list providers|provider list|list enabled providers}" ]
+    },
+    function(request,response) {
+        console.log("List of enabled providers requested, adding card.");
+        createProviderList();
+        response.say(strings.txt_enabledlist + speechList + strings.txt_enabledcard);
+        response.card("TiVo Control- Providers", strings.txt_providercard + cardList);
     });
 
 // PLACES
@@ -765,6 +779,7 @@ function buildProviderNavigation(provider, commands) {
     return commands;
 }
 
+// determine if a specified provider is enabled in the configuration file
 function checkProviderEnabled(provider) {
 
     var provider_loc = video_provider_order.indexOf(provider);
@@ -785,6 +800,36 @@ function checkProviderEnabled(provider) {
         console.log("- disabled");
 
     return provider_status[provider_loc];
+}
+
+// generate a list of providers and their status (to be spoken and added to help card)
+function createProviderList() {
+
+    speechList = "";
+    cardList = "";
+
+    console.log("building list of video providers");
+    for (loc = 0; loc < video_provider_order.length; loc++) {
+        statusText = " "
+        if (video_provider_status[loc] == true) {
+            speechList = speechList + ", " + video_provider_order[loc];
+            statusText = " (enabled)"
+        }
+        cardList = cardList + "\n- " + video_provider_order[loc] + statusText;
+    }
+
+    console.log("building list of audio providers");
+    for (loc = 0; loc < audio_provider_order.length; loc++) {
+        statusText = " "
+        if (audio_provider_status[loc] == true) {
+            speechList = speechList + ", " + audio_provider_order[loc];
+            statusText = " (enabled)"
+        }
+        cardList = cardList + "\n- " + audio_provider_order[loc] + statusText;
+    }
+
+    console.log("speech list:\n " + speechList + "\ncard list: " + cardList);
+
 }
 
 module.exports = app;
