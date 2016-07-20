@@ -82,7 +82,7 @@ app.intent('ListEnabledProviders',
         console.log("List of enabled providers requested, adding card.");
         createProviderList();
         response.say(strings.txt_enabledlist + speechList + strings.txt_enabledcard);
-        response.card("TiVo Control- Providers", strings.txt_providercard + cardList);
+        response.card("TiVo Control- Providers", strings.txt_providercard + cardList + strings.txt_providerfooter);
     });
 
 // PLACES
@@ -112,7 +112,7 @@ app.intent('LiveTV',
 app.intent('ToDoList',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {to do list}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {to do list}" ]
     },
     function(request,response) {
         var commands = [];
