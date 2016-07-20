@@ -75,7 +75,7 @@ Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
    Listening on HTTP port 8085
    ```
 
-5. Enable the network remote control on your TiVo (under Settings & Messages > Remote, CableCARD, & Devices > Network Remote Control.
+5. Enable the network remote control on your TiVo (under Settings & Messages > Remote, CableCARD, & Devices > Network Remote Control. Your TiVo's IP address must be accessible (via telnet on the same local network) from your Alexa-App-Server.
 
 6. In a browser, open the TiVo Control endpoint on your Alexa-App-Server (i.e., http://localhost:8085/tivo_control) and you should see the Alexa Tester page. Here you can set the "Type" field to "IntentRequest", choose an "Intent" (i.e., action) from the dropdown menu, and click "Send Request" to trigger the intent.
 
@@ -121,6 +121,7 @@ Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
    Alexa, ask TiVo to go to My Shows
    Alexa, ask TiVo to turn on captions
    Alexa, tell TiVo to launch YouTube
+   Alexa, ask TiVo to list my providers
    ```
    
 - - -
