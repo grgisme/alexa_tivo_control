@@ -82,7 +82,7 @@ app.intent('ListEnabledProviders',
         console.log("List of enabled providers requested, adding card.");
         createProviderList();
         response.say(strings.txt_enabledlist + speechList + strings.txt_enabledcard);
-        response.card("TiVo Control- Providers", strings.txt_providercard + cardList + strings.txt_providerfooter);
+        response.card("TiVo Control - Providers", strings.txt_providercard + cardList + strings.txt_providerfooter);
     });
 
 // PLACES
@@ -98,6 +98,7 @@ app.intent('GoHome',
         sendCommands(commands);
     });
 
+
 app.intent('LiveTV',
     {
         "slots":{},
@@ -106,6 +107,18 @@ app.intent('LiveTV',
     function(request,response) {
         var commands = [];
         commands.push("LIVETV");
+        sendCommands(commands);
+    });
+
+app.intent('OnePassManager',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {onepasses|season passes}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM1");
         sendCommands(commands);
     });
 
@@ -121,6 +134,30 @@ app.intent('ToDoList',
         sendCommands(commands);
     });
 
+app.intent('WishLists',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {wishlists}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM3");
+        sendCommands(commands);
+    });
+
+app.intent('Search',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show|} search" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM4");
+        sendCommands(commands);
+    });
+
 app.intent('MyShows',
     {
         "slots":{},
@@ -129,6 +166,43 @@ app.intent('MyShows',
     function(request,response) {
         var commands = [];
         commands.push("NOWPLAYING");
+        sendCommands(commands);
+    });
+
+app.intent('Browse',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show|} browse" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM5");
+        sendCommands(commands);
+    });
+
+app.intent('History',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show|} {my|} {recording|} history" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("NUM6");
+        sendCommands(commands);
+    });
+
+app.intent('WhatToWatch',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|open up|display|launch|show} {what to|} watch now" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("TIVO");
+        commands.push("DOWN");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
