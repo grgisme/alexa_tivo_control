@@ -43,6 +43,7 @@ app.pre = function(request,response,type) {
 
 // general error handling
 app.error = function(exception, request, response) {
+    console.log(exception);
     response.say("Sorry, an error has occured. Please try your request again.");
 };
 
