@@ -34,6 +34,18 @@ var cardList = "";
 // define an alexa-app
 var app = new alexa.app(route);
 
+// verify appId for incoming request
+app.pre = function(request,response,type) {
+    if (request.sessionDetails.application.applicationId!=config.alexaAppId) {
+        response.fail("An invalid applicationId was received.");
+    }
+};
+
+// general error handling
+app.error = function(exception, request, response) {
+    response.say("Sorry, an error has occured. Please try your request again.");
+};
+
 
 // launch --------------------------------------------------------------
 
