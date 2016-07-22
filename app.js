@@ -318,6 +318,7 @@ app.intent('Record',
     function(request,response) {
         var commands = [];
         commands.push("RECORD");
+        commands.push("RIGHT");
         sendCommands(commands);
     });
 
@@ -719,7 +720,7 @@ function sendNextCommand () {
         var timeToWait = 300;
         if(queuedCommands[0] == "RIGHT" || queuedCommands[0] == "ENTER")
 	    // wait slightly longer to allow for screen changes
-            timeToWait = 700;
+            timeToWait = 800;
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
     	    // when explicit is true, send the full command as passed
             console.log("Sending Explicit Command: " + command["command"].toUpperCase());
