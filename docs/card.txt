@@ -13,13 +13,15 @@ All of the voice commands start with 'Alexa, tell/ask TiVo to ...':
 CONTROL
 ... change/go to channel <channel number>
 ... force channel <channel number> (cancels recording if necessary)
+<channel number> must be a channel enabled in your Channel List.
 ... pause
 ... play
 ... fast forward
-... replay
 ... skip/advance ahead (30 second skip)
 ... skip commercials (for SkipMode-enabled recordings)
-... record this show (requires manual confirmation)
+... rewind
+... replay (instant replay x2)
+... record this show
 
 FEATURES
 ... turn on/off captions
