@@ -13,7 +13,7 @@ All of the voice commands start with 'Alexa, tell/ask TiVo to ...':
 CONTROL
 ... change/go to channel <channel number>
 ... force channel <channel number> (cancels recording if necessary)
-<channel number> must be a channel enabled in your Channel List. (Note: these commands do not currently work on the TiVo Mini)
+<channel number> must be a channel enabled in your Channel List. (Note: changing channels is not currently supported on the TiVo Mini)
 ... pause
 ... play
 ... fast forward
