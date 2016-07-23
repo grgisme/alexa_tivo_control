@@ -230,9 +230,13 @@ app.intent('ChangeChannel',
         "utterances":[ "{change|go to} channel {1-100|TIVOCHANNEL}" ]
     },
     function(request,response) {
-	var commands = [];
-	commands.push("SETCH "+request.slot("TIVOCHANNEL"));
-	return sendCommands(commands, true);
+        if(tivoMini)
+            response.say(strings.txt_noMiniChannels);
+        else {
+	    var commands = [];
+	    commands.push("SETCH "+request.slot("TIVOCHANNEL"));
+	    return sendCommands(commands, true);
+        }
     });
 
 app.intent('ForceChannel',
@@ -241,9 +245,13 @@ app.intent('ForceChannel',
         "utterances":[ "force channel {1-100|TIVOCHANNEL}" ]
     },
     function(request,response) {
-	var commands = [];
-	commands.push("FORCECH "+request.slot("TIVOCHANNEL"));
-	return sendCommands(commands, true);
+        if(tivoMini)
+            response.say(strings.txt_noMiniChannels);
+        else {
+	    var commands = [];
+	    commands.push("FORCECH "+request.slot("TIVOCHANNEL"));
+	    return sendCommands(commands, true);
+        }
     });
 
 app.intent('Pause',
