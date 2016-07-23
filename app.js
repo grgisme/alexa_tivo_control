@@ -1,6 +1,7 @@
 // load required modules
 var alexa = require('alexa-app');
 var net = require('net');
+require('log-timestamp');
 
 // allow this module to be reloaded by hotswap when changed
 module.change_code = 1;
