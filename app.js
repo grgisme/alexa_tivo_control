@@ -209,12 +209,14 @@ app.intent('History',
 app.intent('WhatToWatch',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {what to|} watch now" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {what to|} watch {now|}" ]
     },
     function(request,response) {
         var commands = [];
         commands.push("TIVO");
         commands.push("DOWN");
+        if(tivoMini) 
+            commands.push("DOWN");
         commands.push("RIGHT");
         sendCommands(commands);
     });
@@ -295,6 +297,17 @@ app.intent('SkipCommerial',
     function(request,response) {
         var commands = [];
         commands.push("ACTION_D");
+        sendCommands(commands);
+    });
+
+app.intent('Rewind',
+    {
+        "slots":{},
+        "utterances":[ "rewind" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("REVERSE");
         sendCommands(commands);
     });
 
@@ -720,7 +733,10 @@ function sendNextCommand () {
         var timeToWait = 300;
         if(queuedCommands[0] == "RIGHT" || queuedCommands[0] == "ENTER")
 	    // wait slightly longer to allow for screen changes
-            timeToWait = 800;
+            if(tivoMini)
+                timeToWait = 1100;
+            else
+                timeToWait = 800;
         if(typeof command == "object" && typeof command["explicit"] != "undefined") {
     	    // when explicit is true, send the full command as passed
             console.log("Sending Explicit Command: " + command["command"].toUpperCase());
@@ -787,10 +803,9 @@ function sendCommands(commands) {
 
     setTimeout(function(){
         if(noResponse) {
-            telnetSocket.write("TELEPORT GUIDE" + "\r");
             if(tivoMini) {
                 //Tivo Minis don't respond with a Channel response on the primary menu or guide, so we'll set another timeout.
-                setTimeout(sendNextCommand, 2500);
+                setTimeout(sendNextCommand, 700);
             }
         }
     }, 700);
