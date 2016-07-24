@@ -287,7 +287,33 @@ app.intent('FastForward',
         sendCommands(commands);
     });
 
-	app.intent('SkipAhead',
+app.intent('FastForwardDouble',
+    {
+        "slots":{},
+        "utterances":[ "{double fast forward|fast forward two x|fast forward two times}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("FORWARD");
+        commands.push("FORWARD");
+        sendCommands(commands);
+    });
+
+app.intent('FastForwardTriple',
+    {
+        "slots":{},
+        "utterances":[ "{triple fast forward|fast forward three x|fast forward three times}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("FORWARD");
+        commands.push("FORWARD");
+        commands.push("FORWARD");
+        sendCommands(commands);
+    });
+
+
+app.intent('SkipAhead',
     {
         "slots":{},
         "utterances":[ "{skip|advance} {forward|ahead}" ]
@@ -316,6 +342,31 @@ app.intent('Rewind',
     },
     function(request,response) {
         var commands = [];
+        commands.push("REVERSE");
+        sendCommands(commands);
+    });
+
+app.intent('RewindDouble',
+    {
+        "slots":{},
+        "utterances":[ "{double rewind|rewind two x|rewind two times}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("REVERSE");
+        commands.push("REVERSE");
+        sendCommands(commands);
+    });
+
+app.intent('RewindTriple',
+    {
+        "slots":{},
+        "utterances":[ "{triple rewind|rewind three x|rewind three times}" ]
+    },
+    function(request,response) {
+        var commands = [];
+        commands.push("REVERSE");
+        commands.push("REVERSE");
         commands.push("REVERSE");
         sendCommands(commands);
     });
