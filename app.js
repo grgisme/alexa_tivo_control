@@ -37,7 +37,8 @@ var app = new alexa.app(route);
 
 // verify appId for incoming request
 app.pre = function(request,response,type) {
-    if (request.sessionDetails.application.applicationId!=config.alexaAppId) {
+    if (request.sessionDetails.application.applicationId!=config.alexaAppId &&
+        request.sessionDetails.application.applicationId!=strings.alexaTestAppId) {
         response.fail("An invalid applicationId was received.");
     }
 };
