@@ -16,11 +16,11 @@ CONTROL
 <channel number> must be a channel enabled in your Channel List. (Note: changing channels is not currently supported on the TiVo Mini)
 ... pause
 ... play
-... fast forward
+... (double/triple) fast forward 
 ... skip/advance ahead (30 second skip)
 ... skip commercials (for SkipMode-enabled recordings)
-... rewind
-... replay (instant replay x2)
+... (double/triple) rewind
+... replay (sends instant replay twice)
 ... record this show
 
 FEATURES
