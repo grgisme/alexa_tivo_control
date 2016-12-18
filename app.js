@@ -843,8 +843,14 @@ function sendCommands(commands) {
         port: port,
         host: host
     });
-    console.log("Connection Created");
-    socketOpen = true;
+
+    // log successful connection
+    telnetSocket.on('connect', function(data) {
+        console.log("Connection Created");
+        socketOpen = true;
+    });
+
+    // data received back from TiVo (usually indicates command sent during Live TV)
     telnetSocket.on('data', function(data) {
         if(noResponse) {
             noResponse = false;
@@ -852,14 +858,25 @@ function sendCommands(commands) {
             interval = setInterval(sendNextCommand, 300);
         }
     });
+
+    // timeout; send next command if the connection is still open
     telnetSocket.on('timeout', function(data) {
         console.log("TIMEOUT RECEIVED");
         if(socketOpen)
             sendNextCommand();
     });
+
+    // connection has been closed
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
+
+    // if no status received back from TiVo, it's probably during playback of a recording
+    if(noResponse) {
+        noResponse = false;
+        console.log("PLAYBACK IN PROGRESS");
+        interval = setInterval(sendNextCommand, 300);
+    }
     noResponse = true;
 
     setTimeout(function(){
