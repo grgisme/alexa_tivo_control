@@ -105,7 +105,7 @@ app.intent('ListEnabledProviders',
 app.intent('GoHome',
     {
         "slots":{},
-        "utterances":[ "{show|go} {to|to the|} {home|tivo central} {screen|}" ]
+        "utterances":[ "{show|go} {to|to the|} {home|tivo central} {screen|}", "tivo central", "home" ]
     },
     function(request,response) {
         var commands = [];
@@ -117,7 +117,7 @@ app.intent('GoHome',
 app.intent('LiveTV',
     {
         "slots":{},
-        "utterances":[ "send {the|} {command|} live tv", "go to live tv" ]
+        "utterances":[ "send {the|} {command|} live tv", "go to live tv", "live tv" ]
     },
     function(request,response) {
         var commands = [];
@@ -128,7 +128,7 @@ app.intent('LiveTV',
 app.intent('OnePassManager',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {onepasses|season passes}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {onepasses|season passes}", "{onepass manager|season passes}" ]
     },
     function(request,response) {
         var commands = [];
@@ -140,7 +140,7 @@ app.intent('OnePassManager',
 app.intent('ToDoList',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {to do list}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {to do list}", "to do list" ]
     },
     function(request,response) {
         var commands = [];
@@ -152,7 +152,7 @@ app.intent('ToDoList',
 app.intent('WishLists',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {wishlists}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {my|} {wishlists}", "wish lists" ]
     },
     function(request,response) {
         var commands = [];
@@ -164,7 +164,7 @@ app.intent('WishLists',
 app.intent('Search',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show|} search" ]
+        "utterances":[ "{go to|open|open up|display|launch|show|} search", "search" ]
     },
     function(request,response) {
         var commands = [];
@@ -176,7 +176,7 @@ app.intent('Search',
 app.intent('MyShows',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {now playing|my shows|my recordings}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {now playing|my shows|my recordings}", "my shows" ]
     },
     function(request,response) {
         var commands = [];
@@ -187,7 +187,7 @@ app.intent('MyShows',
 app.intent('Browse',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show|} browse" ]
+        "utterances":[ "{go to|open|open up|display|launch|show|} browse", "browse" ]
     },
     function(request,response) {
         var commands = [];
@@ -199,7 +199,7 @@ app.intent('Browse',
 app.intent('History',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show|} {my|} {recording|} history" ]
+        "utterances":[ "{go to|open|open up|display|launch|show|} {my|} {recording|} history", "history" ]
     },
     function(request,response) {
         var commands = [];
@@ -211,7 +211,7 @@ app.intent('History',
 app.intent('WhatToWatch',
     {
         "slots":{},
-        "utterances":[ "{go to|open|open up|display|launch|show} {what to|} watch {now|}" ]
+        "utterances":[ "{go to|open|open up|display|launch|show} {what to|} watch {now|}", "what to watch {now|}" ]
     },
     function(request,response) {
         var commands = [];
@@ -778,7 +778,7 @@ app.intent('iHeartRadio',
 app.intent('Vevo',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {vevo}", "play {music|music on|} vevo" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {vevo music}", "play {music|music on|} vevo music" ]
     },
     function(request,response) {
         if (checkProviderEnabled(strings.vevo)) {
