@@ -963,10 +963,12 @@ function openMusicCommands(commands) {
 function buildProviderNavigation(provider, commands) {
 
     var provider_loc = video_provider_order.indexOf(provider);
+    var audio_provider = false;
 
     if (provider_loc == -1) {
+        audio_provider = true;
         console.log("building navigation for audio provider (" + provider + ")");
-        provider_loc = audio_provider_order.indexOf(provider) - 1;
+        provider_loc = audio_provider_order.indexOf(provider);
         provider_order = audio_provider_order;
         provider_status = audio_provider_status;
     }
@@ -979,7 +981,13 @@ function buildProviderNavigation(provider, commands) {
     for (loc = 0; loc <= provider_loc; loc++) {
         console.log("- " + provider_order[loc] + " (" + provider_status[loc] + ")");
         if (provider_status[loc] == true) {
-            commands.push("DOWN");}
+            // for audio providers, skip the first DOWN command since after pressing
+            // RIGHT on the Music menu, the first provider is already highlighted
+            if (audio_provider == true) 
+                audio_provider = false;
+            else 
+                commands.push("DOWN");
+            }
     }
     commands.push("RIGHT");
     return commands;
