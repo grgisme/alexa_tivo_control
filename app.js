@@ -870,21 +870,11 @@ function sendCommands(commands) {
     telnetSocket.on('end', function(data) {
         socketOpen = false;
     });
-
-    // if no status received back from TiVo, it's probably during playback of a recording
-    if(noResponse) {
-        noResponse = false;
-        console.log("PLAYBACK IN PROGRESS");
-        interval = setInterval(sendNextCommand, 300);
-    }
     noResponse = true;
 
     setTimeout(function(){
         if(noResponse) {
-            if(tivoMini) {
-                //Tivo Minis don't respond with a Channel response on the primary menu or guide, so we'll set another timeout.
-                setTimeout(sendNextCommand, 700);
-            }
+            setTimeout(sendNextCommand, 700);
         }
     }, 700);
 }
