@@ -15,12 +15,12 @@ var tivoMini = config.tivoMini || false;
 var route = config.route || "tivo_control";
 
 // set video providers and their status
-var video_provider_order = [strings.hbogo, strings.amazon, strings.netflix, strings.hulu, strings.youtube, strings.mlbtv, strings.plex, strings.vudu, strings.hsn, strings.aol, strings.flixfling, strings.toongoggles, strings.wwe, strings.yahoo, strings.yupptv];
-var video_provider_status = [config.hbogo, config.amazon, config.netflix, config.hulu, config.youtube, config.mlbtv, config.plex, config.vudu, config.hsn, config.aol, config.flixfling, config.toongoggles, config.wwe, config.yahoo, config.yupptv];
+var video_provider_order = [strings.netflix, strings.amazon, strings.hbogo, strings.hulu, strings.youtube, strings.mlbtv, strings.plex, strings.vudu, strings.hsn, strings.alt, strings.flixfling, strings.toongoggles, strings.wwe, strings.yahoo, strings.yupptv];
+var video_provider_status = [config.netflix, config.amazon, config.hbogo, config.hulu, config.youtube, config.mlbtv, config.plex, config.vudu, config.hsn, config.alt, config.flixfling, config.toongoggles, config.wwe, config.yahoo, config.yupptv];
 
 // set audio providers and their status
-var audio_provider_order = [strings.pandora, strings.spotify, strings.iheartradio];
-var audio_provider_status = [config.pandora, config.spotify, config.iheartradio];
+var audio_provider_order = [strings.iheartradio, strings.pandora, strings.plex_m, strings.spotify, strings.vevo];
+var audio_provider_status = [config.iheartradio, config.pandora, config.plex_m, config.spotify, config.vevo];
 
 // define variables
 var queuedCommands = [];
@@ -611,22 +611,22 @@ app.intent('HSN',
             response.say(strings.hsn + strings.txt_notenabled);
     });
 	
-app.intent('AOL',
+app.intent('ALTChannel',
     {
         "slots":{},
-        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {aol|aol on|america online}" ]
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {alt|alt channel}" ]
     },
     function(request,response) {
-        if (checkProviderEnabled(strings.aol)) {
-            response.say("Launching " + strings.aol);
+        if (checkProviderEnabled(strings.alt)) {
+            response.say("Launching " + strings.alt);
             var commands = [];
             commands = addInitCommands(commands);
             commands = openMediaCommands(commands);
-            commands = buildProviderNavigation(strings.aol, commands);
+            commands = buildProviderNavigation(strings.alt, commands);
             sendCommands(commands);
         }
         else
-            response.say(strings.aol + strings.txt_notenabled);
+            response.say(strings.alt + strings.txt_notenabled);
     });
 	
 app.intent('FlixFling',
@@ -775,6 +775,41 @@ app.intent('iHeartRadio',
             response.say(strings.iheartradio + strings.txt_notenabled);
     });
 
+app.intent('Vevo',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {vevo}", "play {music|music on|} vevo" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.vevo)) {
+            response.say("Launching " + strings.vevo);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMusicCommands(commands);
+            commands = buildProviderNavigation(strings.vevo, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.vevo + strings.txt_notenabled);
+    });
+
+app.intent('PlexMusic',
+    {
+        "slots":{},
+        "utterances":[ "{go to|open|turn on|open up|display|jump to|launch|} {plex music}", "play {music|music on|} plex" ]
+    },
+    function(request,response) {
+        if (checkProviderEnabled(strings.plex_m)) {
+            response.say("Launching " + strings.plex_m);
+            var commands = [];
+            commands = addInitCommands(commands);
+            commands = openMusicCommands(commands);
+            commands = buildProviderNavigation(strings.plex_m, commands);
+            sendCommands(commands);
+        }
+        else
+            response.say(strings.plex_m + strings.txt_notenabled);
+    });
 
 // functions -----------------------------------------------------------
 
@@ -931,7 +966,7 @@ function buildProviderNavigation(provider, commands) {
 
     if (provider_loc == -1) {
         console.log("building navigation for audio provider (" + provider + ")");
-        provider_loc = audio_provider_order.indexOf(provider);
+        provider_loc = audio_provider_order.indexOf(provider) - 1;
         provider_order = audio_provider_order;
         provider_status = audio_provider_status;
     }

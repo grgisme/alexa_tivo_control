@@ -5,23 +5,25 @@
   "route": "tivo_control",
   "tivoMini": false,
 
-  "hbogo": true,
-  "amazon": true,
   "netflix": true,
+  "amazon": true,
+  "hbogo": true,
   "hulu": true,
   "youtube": true,
   "mlbtv": true,
   "plex": true,
   "vudu": true,
   "hsn": true,
-  "aol": true,
+  "alt": true,
   "flixfling": true,
   "toongoggles": true,
   "wwe": true,
   "yahoo": true,
   "yupptv": true,
 
+  "iheartradio": true,
   "pandora": true,
+  "plex_m": true,
   "spotify": true,
-  "iheartradio": true
+  "vevo": true
 }
