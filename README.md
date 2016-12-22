@@ -1,38 +1,35 @@
 # alexa_tivo_control
-## WORK IN PROGRESS, NOT READY TO USE
-## WORK IN PROGRESS, NOT READY TO USE
-## WORK IN PROGRESS, NOT READY TO USE
-Alexa Skill providing network remote control for Tivo devices.
+Alexa skill to control a TiVo DVR with the Amazon Echo and voice commands
 
-Tivo Network Remote Documentation:
-`http://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf`
-
+- - -
 ## Requirements
-* Node
-* Alexa-App
 
+* [Node](https://nodejs.org/en/)
+* [Alexa-App-Server](https://www.npmjs.com/package/alexa-app-server)
+* [Alexa-App](https://www.npmjs.com/package/alexa-app)
+
+- - -
 ## Installation Instructions
 
-Clone the repo:
-```bash
-git clone git@github.com:grgisme/alexa_tivo_control.git
-```
-Install Dependencies:
-```bash
-npm install
-```
-Copy config_example.json to config.json:
-```bash
-cp config_example.json config.json
-```
+See the [wiki page](https://github.com/jradwan/alexa_tivo_control/wiki/Installation-Instructions).
 
-Modify config.json to use your tivo ip address and port, and your Alexa App Id
-
-You must also enable the network remote control on your Tivo.
-
+- - -
 ## Contact
 
-Garrett Griffin-Morales
+Jeremy C. Radwan
 
-- https://github.com/grgisme
-- http://twitter.com/grgisme
+- https://github.com/jradwan
+- http://www.windracer.net/blog
+
+- - -
+## References
+
+This project was forked from and inspired by https://github.com/grgisme/alexa_tivo_control
+
+[Hosting a Custom Skill as a Web Service](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-an-alexa-skill-as-a-web-service) (Amazon)
+
+[Step-by-Step Guide to Build a Fact Skill](https://developer.amazon.com/public/community/post/Tx3DVGG0K0TPUGQ/New-Alexa-Skills-Kit-Template:-Step-by-Step-Guide-to-Build-a-Fact-Skill) (Amazon)
+
+[Developing Alexa Skills Locally with Node.js: Setting Up Your Local Environment](https://www.bignerdranch.com/blog/developing-alexa-skills-locally-with-nodejs-setting-up-your-local-environment/) (Big Nerd Ranch)
+
+[Tivo Network Remote Documentation](http://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf) (TiVo)

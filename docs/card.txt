@@ -1,0 +1,56 @@
+---- REMOVE BETWEEN THESE LINES ----
+This file contains the text for the TiVo Control help card.
+
+Make changes/edits here, where it's easier to read and see formatting. 
+Then, replace all CR/LF with \n and put the resulting string into the
+txt_help attribute in the constants.json file.
+---- REMOVE BETWEEN THESE LINES ----
+
+Welcome to TiVo Control. You can use this skill to control your TiVo with your Amazon Echo and Alexa voice control.
+
+All of the voice commands start with 'Alexa, tell/ask TiVo to ...':
+
+CONTROL
+... change/go to channel <channel number>
+... force channel <channel number> (cancels recording if necessary)
+<channel number> must be a channel enabled in your Channel List
+... pause
+... play
+... (double/triple) fast forward 
+... skip/advance ahead (30 second skip)
+... skip commercials (for SkipMode-enabled recordings)
+... (double/triple) rewind
+... replay (sends instant replay twice)
+... record this show
+
+FEATURES
+... turn on/off captions
+... turn on/off/toggle QuickMode
+
+PLACES
+... go to Live TV
+... go Home/TiVo Central
+... go to/show My Shows/Now Playing
+... go to/show my OnePasses
+... go to/show my WishLists
+... go to/show my To Do List
+... search
+... browse
+... go to/show my history
+... what to watch
+
+PROVIDERS
+... launch/start/open <provider name>
+... list providers (also adds a card to your Alexa app listing all available providers)
+
+ADVANCED
+... send the command <command>
+
+<command> can be any command defined in the TiVo TCP Remote Protocol. For example:
+- KEYBOARD commands (letters, numbers, etc.)
+- IRCODE commands (thumbs up/down, navigation (up, down, left, right), etc.)
+
+Sending individual commands to the TiVo with Alexa can be cumbersome since each command needs to be issued separately (i.e., 'Alexa, tell TiVo to send the command down', 'Alexa, tell TiVo to send the command select'). For complex interactions, using the physical remote control is the better method.
+
+OTHER
+... for Help: add this card to your Alexa app
