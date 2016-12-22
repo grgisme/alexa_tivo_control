@@ -30,7 +30,6 @@
   "txt_enabledcard": ", I've also added a card to your Alexa app with this list.",
   "txt_providercard": "Here's a list of video and audio providers along with whether or not they are enabled for TiVo Control:\n\n",
   "txt_providerfooter": "\n\nYou must update your config.json file in the TiVo Control directory and mark the providers you have active on your TiVo as 'true'. This is used by the program to dynamically determine the remote key-presses required to navigate to the proper menu item.",
-  "txt_noMiniChannels": "I'm sorry, changing channels is not currently supported on the TiVo Mini.",
 
   "alexaTestAppId": "amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe"
 }

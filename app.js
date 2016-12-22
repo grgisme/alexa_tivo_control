@@ -231,13 +231,16 @@ app.intent('ChangeChannel',
         "utterances":[ "{change|go to} channel {1-100|TIVOCHANNEL}" ]
     },
     function(request,response) {
-        if(tivoMini)
-            response.say(strings.txt_noMiniChannels);
-        else {
-	    var commands = [];
-	    commands.push("SETCH "+request.slot("TIVOCHANNEL"));
-	    return sendCommands(commands, true);
+	var commands = [];
+        if(tivoMini) {
+            for(pos = 0 ; pos < request.slot("TIVOCHANNEL").length ; pos++) 
+	        commands.push("NUM"+request.slot("TIVOCHANNEL").substring(pos,pos+1));
+            commands.push("ENTER");
         }
+        else {
+	    commands.push("SETCH "+request.slot("TIVOCHANNEL"));
+        }
+	return sendCommands(commands, true);
     });
 
 app.intent('ForceChannel',
@@ -246,13 +249,16 @@ app.intent('ForceChannel',
         "utterances":[ "force channel {1-100|TIVOCHANNEL}" ]
     },
     function(request,response) {
-        if(tivoMini)
-            response.say(strings.txt_noMiniChannels);
-        else {
-	    var commands = [];
-	    commands.push("FORCECH "+request.slot("TIVOCHANNEL"));
-	    return sendCommands(commands, true);
+	var commands = [];
+        if(tivoMini) {
+            for(pos = 0 ; pos < request.slot("TIVOCHANNEL").length ; pos++) 
+	        commands.push("NUM"+request.slot("TIVOCHANNEL").substring(pos,pos+1));
+            commands.push("ENTER");
         }
+        else {
+	    commands.push("FORCECH "+request.slot("TIVOCHANNEL"));
+        }
+	return sendCommands(commands, true);
     });
 
 app.intent('Pause',
